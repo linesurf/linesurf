@@ -96,7 +96,7 @@ namespace Linesurf
             spriteBatch.DrawString(fontNormal, (int) (1000/updateGameTime.TotalMilliseconds) + " updates/s (gameTime)", new Vector2(0, 60), Color.CornflowerBlue);
             spriteBatch.DrawString(fontNormal, updateTimeDateTime.TotalMilliseconds + "ms update (DateTime)", new Vector2(0, 80), Color.CornflowerBlue);
             spriteBatch.DrawString(fontNormal, (int) (1000/updateTimeDateTime.TotalMilliseconds) + " updates/s (DateTime)", new Vector2(0, 100), Color.CornflowerBlue);
-            
+            spriteBatch.DrawString(fontNormal, counter.ToString() + "ms clock time", new Vector2(0, 120), Color.CornflowerBlue);
             spriteBatch.DrawString(fontNormal, "OWO!!!!!!!!", new Vector2(0,200), Color.Aqua);
             if (showText) spriteBatch.DrawString(fontNormal, "uwu owo, what's this??????", new Vector2(0,210), Color.White);
             spriteBatch.End();
