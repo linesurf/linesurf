@@ -7,6 +7,8 @@
 
     public enum ArrowDirection
     {
-        Up, Down, Left, Right
+            Up,
+        Left, Right,
+           Down
     }
 }
