@@ -1,7 +1,7 @@
 ﻿namespace Linesurf.Framework.Map
 {
-    public class Nudger:HitObject
+    public class Nudger : HitObject
     {
-        
+
     }
 }

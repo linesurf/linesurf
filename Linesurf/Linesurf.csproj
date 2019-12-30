@@ -3,8 +3,13 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <RootNamespace>Balls</RootNamespace>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
+    
+    <PropertyGroup>
+      <PublishReadyToRun>false</PublishReadyToRun>
+      <TieredCompilation>false</TieredCompilation>
+    </PropertyGroup>
 
   <ItemGroup>
     <MonoGameContentReference Include="**\*.mgcb" />
@@ -12,6 +17,7 @@
 
   <ItemGroup>
     <PackageReference Include="MonoGame.Content.Builder" Version="3.7.0.4" />
+    <!-- TODO: Use WindowsDX on Windows -->
     <PackageReference Include="MonoGame.Framework.DesktopGL.Core" Version="3.7.0.7" />
   </ItemGroup>
 
