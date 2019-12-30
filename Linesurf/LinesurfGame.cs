@@ -9,8 +9,8 @@ namespace Linesurf
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        Texture2D logo;
-        SpriteFont fontNormal;
+        GameTime toShowTime;
+        SpriteFont font;
         public static Texture2D Pixel;
 
         public LinesurfGame()
@@ -18,6 +18,8 @@ namespace Linesurf
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+            graphics.SynchronizeWithVerticalRetrace = false;
+            IsFixedTimeStep = false;
         }
 
         protected override void Initialize()
@@ -25,20 +27,20 @@ namespace Linesurf
             // TODO: Add your initialization logic here
             Pixel = new Texture2D(GraphicsDevice, 1, 1);
             Pixel.SetData(new[] { Color.White });
+
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
-
+            font = Content.Load<SpriteFont>("fontnormal");
+            
         }
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
-
+            gameTime = toShowTime;
             base.Update(gameTime);
         }
 
@@ -46,6 +48,7 @@ namespace Linesurf
         {
             graphics.GraphicsDevice.Clear(Color.DimGray);
             spriteBatch.Begin();
+            spriteBatch.DrawString(font, gameTime.ElapsedGameTime.TotalMilliseconds + "ms", Vector2.One, Color.Aqua);
             spriteBatch.End();
             base.Draw(gameTime);
         }
