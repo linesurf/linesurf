@@ -2,11 +2,11 @@
 {
     public class Arrow : HitObject
     {
-        public ArrowDirection Direction;
+        public ArrowDirection Direction { get; }
     }
 
     public enum ArrowDirection
     {
-        Up,Down,Left,Right
+        Up, Down, Left, Right
     }
 }

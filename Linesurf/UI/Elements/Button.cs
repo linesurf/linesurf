@@ -6,7 +6,7 @@ namespace Linesurf.UI.Elements
     public class TextButton : UIElement
     {
         private SpriteFont font;
-        private string text;
+        private string text = default!;
         private Color textColor;
         private Color hoverColor;
         private Color bgColor;

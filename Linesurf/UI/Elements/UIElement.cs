@@ -53,7 +53,7 @@ namespace Linesurf.UI.Elements
 
         protected bool Hovering() => Rectangle.Intersects(new Rectangle(Mouse.GetState().Position, Point.Zero));
 
-        public event EventHandler Click;
+        public event EventHandler? Click;
 
         protected virtual void OnClick(EventArgs e) => Click?.Invoke(this, e);
 

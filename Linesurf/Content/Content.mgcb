@@ -20,12 +20,17 @@
 /processorParam:TextureFormat=Compressed
 /build:fontnormal.spritefont
 
-#begin fontsmall.spritefont
-/importer:FontDescriptionImporter
-/processor:LocalizedFontProcessor
-/processorParam:PremultiplyAlpha=True
-/processorParam:TextureFormat=Compressed
-/build:fontsmall.spritefont
+#begin normal-hitnormal.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:normal-hitnormal.wav
+
+#begin shutter.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:shutter.mp3
 
 #begin normal-hitnormal.wav
 /importer:WavImporter

@@ -4,6 +4,6 @@ namespace Linesurf.Framework.Map
 {
     public class Slider : HitObject
     {
-        public TimeSpan SliderLength;
+        public TimeSpan SliderLength { get; } 
     }
 }

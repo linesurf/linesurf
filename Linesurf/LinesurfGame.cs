@@ -10,92 +10,100 @@ namespace Linesurf
     public class LinesurfGame : Game
     {
         GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
-        GameTime toShowTime;
-        SpriteFont font;
-        public static Texture2D Pixel;
-        private float x;
-        private Vector2 vector2 = new Vector2(1, 50);
-        private bool timeron = false;
-        private bool showthing = false;
-        private float currentTime = 0;
+        SpriteBatch spriteBatch = default!;
+        SpriteFont fontNormal = default!;
+        DateTime oldTime = DateTime.Now;
+        TimeSpan updateTimeDateTime = TimeSpan.Zero;
+        TimeSpan updateGameTime;
+        WeightedFramerate drawRate = new WeightedFramerate(4);
+        WeightedFramerate updateRate = new WeightedFramerate(4);
+        float x;
+        bool timerOn = false;
+        bool showText = false;
+        float currentTime = 0;
         int counter = 1;
-        int limit = 999999;
         float countDuration = 1f;
-        private SoundEffect effect;
-        bool playsoundeffect = false;
+        SoundEffect effect;
+        bool playSoundEffect = false;
         Song song;
+        public static Texture2D Pixel = default!;
+
         public LinesurfGame()
         {
             graphics = new GraphicsDeviceManager(this);
+
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
-            graphics.SynchronizeWithVerticalRetrace = false;
-            IsFixedTimeStep = false;
-            TargetElapsedTime = TimeSpan.FromMilliseconds(1000);
-            
+            IsFixedTimeStep = true;
+
+            TargetElapsedTime = TimeSpan.FromMilliseconds(1);
         }
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
             Pixel = new Texture2D(GraphicsDevice, 1, 1);
             Pixel.SetData(new[] { Color.White });
-            
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            font = Content.Load<SpriteFont>("fontnormal");
+            fontNormal = Content.Load<SpriteFont>("fontnormal");
             effect = Content.Load<SoundEffect>("normal-hitnormal");
             
             this.song = Content.Load<Song>("shutter");
             MediaPlayer.Volume = 0.17f;
             MediaPlayer.Play(song);
-            timeron = true;
+            timerOn = true;
         }
 
         protected override void Update(GameTime gameTime)
-        {
-            if (timeron) if (gameTime != null)
-                {
+        {            
+            if (timerOn)
+            {
                     currentTime += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
-                    showthing = false;
-                }
-                else showthing = true;
+                    showText = false; 
+            }
+            else showText = true;
             if (currentTime >= countDuration)
             {
                 counter++;
               
                 currentTime -= countDuration; 
             }
-            if (counter % 461 == 0) playsoundeffect = true;
-            if (playsoundeffect)
+            if (counter % 461 == 0) playSoundEffect = true;
+            if (playSoundEffect)
             {
                 effect.Play(0.20f, 0f, 0f);
-                playsoundeffect = false;
+                playSoundEffect = false;
             }
-            
-            gameTime = toShowTime;
-            
-            
-            
+
+            updateGameTime = gameTime.ElapsedGameTime;
+            updateTimeDateTime = DateTime.Now.Subtract(oldTime);
+            oldTime = DateTime.Now;
             base.Update(gameTime);
+            updateRate.Update();
         }
 
         protected override void Draw(GameTime gameTime)
         {
             graphics.GraphicsDevice.Clear(Color.DimGray);
             spriteBatch.Begin();
-            spriteBatch.DrawString(font, "uwu owo, what's this??????? " + gameTime.ElapsedGameTime.TotalMilliseconds + "ms " + counter.ToString(), Vector2.One, Color.Aqua);
+            spriteBatch.DrawString(fontNormal, (int) updateRate.Framerate + " updates per second", new Vector2(0, 0), Color.CornflowerBlue);
+            spriteBatch.DrawString(fontNormal, (int) drawRate.Framerate + " draws per second", new Vector2(0, 20), Color.CornflowerBlue);
+            spriteBatch.DrawString(fontNormal, updateGameTime.TotalMilliseconds + "ms update (gameTime)", new Vector2(0, 40), Color.CornflowerBlue);
+            spriteBatch.DrawString(fontNormal, (int) (1000/updateGameTime.TotalMilliseconds) + " updates/s (gameTime)", new Vector2(0, 60), Color.CornflowerBlue);
+            spriteBatch.DrawString(fontNormal, updateTimeDateTime.TotalMilliseconds + "ms update (DateTime)", new Vector2(0, 80), Color.CornflowerBlue);
+            spriteBatch.DrawString(fontNormal, (int) (1000/updateTimeDateTime.TotalMilliseconds) + " updates/s (DateTime)", new Vector2(0, 100), Color.CornflowerBlue);
             
-            spriteBatch.DrawString(font, "OWO!!!!!!!!", vector2, Color.Aqua);
-            if (showthing) spriteBatch.DrawString(font, "uwu owo, what's this??????", Vector2.One, Color.White);
+            spriteBatch.DrawString(fontNormal, "OWO!!!!!!!!", new Vector2(0,200), Color.Aqua);
+            if (showText) spriteBatch.DrawString(fontNormal, "uwu owo, what's this??????", new Vector2(0,210), Color.White);
             spriteBatch.End();
             base.Draw(gameTime);
+            drawRate.Update();
         }
+
 
     }
 }

@@ -6,7 +6,7 @@ namespace Linesurf.UI.Elements
     public class Label : UIElement
     {
         private SpriteFont font;
-        private string text;
+        private string text = default!;
         private Color textColor;
         private Color hoverColor;
         public string Text
@@ -46,7 +46,7 @@ namespace Linesurf.UI.Elements
 
         public override void Draw(SpriteBatch spriteBatch, GraphicsDeviceManager graphics)
         {
-            spriteBatch.DrawString(font,Text,position,textColor);
+            spriteBatch.DrawString(font, Text, position, textColor);
         }
     }
 }

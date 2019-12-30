@@ -4,6 +4,6 @@ namespace Linesurf.Framework.Map
 {
     public abstract class HitObject
     {
-        public TimeSpan Position;
+        public TimeSpan Position { get; }
     }
 }
