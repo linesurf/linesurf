@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace Linesurf
 {
@@ -8,13 +9,16 @@ namespace Linesurf
         double weight;
         int numerator;
 
-        public DateTime LastUpdate { get; private set; }
+        public Stopwatch Stopwatch { get; }
+
+        public TimeSpan LastLatency { get; private set; }
 
         public double Framerate => numerator / currentFrametimes is var framerate && double.IsInfinity(framerate) ? 0 : framerate;
 
         public WeightedFramerate(int oldFrameWeight)
         {
-            LastUpdate = DateTime.Now;
+            LastLatency = default;
+            Stopwatch = new Stopwatch();
             currentFrametimes = 0;
             numerator = oldFrameWeight;
             weight = oldFrameWeight / (oldFrameWeight - 1d);
@@ -22,10 +26,11 @@ namespace Linesurf
 
         public void Update()
         {
-            var timeSinceLastFrame = (DateTime.Now - LastUpdate).TotalSeconds;
+            LastLatency = Stopwatch.Elapsed;
+            var timeSinceLastFrame = Stopwatch.Elapsed.TotalSeconds;
             currentFrametimes /= weight;
             currentFrametimes += timeSinceLastFrame;
-            LastUpdate = DateTime.Now;
+            Stopwatch.Restart();
         }
     }
 }
