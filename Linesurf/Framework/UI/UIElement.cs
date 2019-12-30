@@ -6,12 +6,12 @@ namespace Linesurf.Framework.UI
 {
     public abstract class UIElement
     {
-        protected UIContainer parent;
+        protected UIContainer parent = default!;
         protected Rectangle elementRect;
-        protected string xPosition;
-        protected string yPosition;
-        protected string width;
-        protected string height;
+        protected string xPosition = default!;
+        protected string yPosition = default!;
+        protected string width = default!;
+        protected string height = default!;
 
         public Rectangle ElementRect { get => elementRect; }
         public AnchorPoint AnchorPoint;
