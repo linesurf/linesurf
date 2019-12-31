@@ -24,7 +24,11 @@ namespace Linesurf.Framework
             SongOffset = offset;
             Debounce = false;
         }
-
+        /// <summary>
+        /// Returns true if the current millisecond the clock is on is a beat.
+        /// </summary>
+        /// <param name="updateRate"></param>
+        /// <returns></returns>
         public bool CheckBeat(ref WeightedFramerate updateRate)
         {
             if ((AudioStart.Elapsed.TotalMilliseconds - SongOffset) % BpmOffset <
