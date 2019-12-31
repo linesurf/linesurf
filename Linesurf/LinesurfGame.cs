@@ -107,7 +107,7 @@ namespace Linesurf
 
         protected override void Draw(GameTime gameTime)
         {
-            graphics.GraphicsDevice.Clear(Color.DimGray);
+            graphics.GraphicsDevice.Clear(new Color((uint)Map((timer % bpmOffset)*(timer % bpmOffset)*(timer % bpmOffset), bpmOffset*bpmOffset*bpmOffset, 0, 0,255)));
             spriteBatch.Begin();
 
             spriteBatch.DrawString(fontNormal, Math.Round(updateRate.Framerate) + " updates per second", new Vector2(0, 0), Color.CornflowerBlue);
@@ -131,6 +131,11 @@ namespace Linesurf
 
             base.Draw(gameTime);
             drawRate.Update();
+        }
+        
+        public static double Map(double value, double fromLow, double fromHigh, double toLow, double toHigh) 
+        {
+            return (value - fromLow) * (toHigh - toLow) / (fromHigh - fromLow) + toLow;
         }
     }
 }
