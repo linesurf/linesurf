@@ -56,15 +56,11 @@ namespace Linesurf.Framework.UI
             }
         }
 
-        protected void ParseRectangle()
+        protected unsafe void ParseRectangle()
         {
-            int x;
-            int y;
-            int height;
-            int width;
-            int i;
+            int x, y, height = 0, width = 0, i;
             //xpos
-            
+
             if (int.TryParse(xPosition, NumberStyles.Integer, CultureInfo.InvariantCulture, out i))
             {
                 if (i < 0) x = parent.ElementRect.Width - i;
@@ -93,7 +89,8 @@ namespace Linesurf.Framework.UI
             }
 
             //need to implement size Lol
-            
+            _ = &width;
+            _ = &height;
         }
     }
 }

@@ -4,6 +4,7 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
     
     <PropertyGroup>
@@ -28,5 +29,4 @@
   <ItemGroup>
     <Folder Include="Framework\UI\Elements" />
   </ItemGroup>
-
 </Project>

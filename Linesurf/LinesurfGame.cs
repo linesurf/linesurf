@@ -1,8 +1,10 @@
 ﻿using System;
-using System.Linq;
+using System.Diagnostics;
+using System.Reflection;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 
 namespace Linesurf
@@ -19,27 +21,25 @@ namespace Linesurf
         bool timerOn = false;
         SoundEffect effect = default!;
         Song song = default!;
-        
-        float timer;
-        float timerDurationMs;
 
-        public const float MsOffset = 1;
+        bool debounce = false;
+        bool isDebug = typeof(Program).Assembly.GetCustomAttribute<AssemblyConfigurationAttribute>()?.Configuration == "Debug";
+
+        Stopwatch audioStart = new Stopwatch();
 
         public static Texture2D Pixel = default!;
-        double[] gameTimeAvgs = new double[50];
-        double[] updateRateAvgs = new double[50];
-        int avgLoopCount = 0;
+
         public LinesurfGame()
         {
             graphics = new GraphicsDeviceManager(this);
 
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
-            IsFixedTimeStep = false;
-            graphics.SynchronizeWithVerticalRetrace = false;
+            IsFixedTimeStep = true;
             Window.AllowUserResizing = true;
 
-            TargetElapsedTime = TimeSpan.FromMilliseconds(MsOffset);
+            //songPosition = new Stopwatch();
+            TargetElapsedTime = TimeSpan.FromMilliseconds(1);
         }
 
         protected override void Initialize()
@@ -56,57 +56,70 @@ namespace Linesurf
             effect = Content.Load<SoundEffect>("normal-hitnormal");
 
             song = Content.Load<Song>("shutter");
-            MediaPlayer.ActiveSongChanged += (sender, e) => timerOn = true;
-            timer = 0;
-            timerDurationMs = (int)Math.Round(60000d/120d);
+            MediaPlayer.MediaStateChanged += (sender, e) =>
+            {
+                timerOn = true;
+                audioStart.Restart();
+            };
+
 
             MediaPlayer.Volume = 0.17f;
             MediaPlayer.Play(song);
         }
 
+
         protected override void Update(GameTime gameTime)
         {
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+                Exit();
+
             if (timerOn)
             {
-                timer -= (float)gameTime.ElapsedGameTime.TotalMilliseconds;
-                if (timer <= 0)
+                var ms = audioStart.Elapsed;
+
+                var value = Math.Abs(ms.TotalMilliseconds % 500);
+
+                if (value < 5)
                 {
-                    effect.Play(0.20f, 0f, 0f);
-                    timer = timerDurationMs - timer;
+                    if (!debounce)
+                    {
+                        effect.Play(0.20f, 0f, 0f);
+                        debounce = true;
+                    }
+                }
+                else
+                {
+                    debounce = false;
                 }
             }
-            Console.WriteLine("Update: gt {0}ms, ur {1}ms", 
-                gameTime.ElapsedGameTime.TotalMilliseconds,updateRate.LastLatency.TotalMilliseconds);
-            Console.WriteLine("Avg:gt {0}ms, ur {1}ms",
-                gameTimeAvgs.Average(), updateRateAvgs.Average());
-            gameTimeAvgs[avgLoopCount] = gameTime.ElapsedGameTime.TotalMilliseconds;
-            updateRateAvgs[avgLoopCount] = updateRate.LastLatency.TotalMilliseconds;
-            if(++avgLoopCount >= 50) avgLoopCount = 0;
+
             base.Update(gameTime);
-            updateRate.Update();
         }
+
 
         protected override void Draw(GameTime gameTime)
         {
             graphics.GraphicsDevice.Clear(Color.DimGray);
             spriteBatch.Begin();
 
-            spriteBatch.DrawString(fontNormal, (int) updateRate.Framerate + " updates per second", new Vector2(0, 0), Color.CornflowerBlue);
-            spriteBatch.DrawString(fontNormal, updateRate.Framerate/1000 + "ms", new Vector2(0, 20), Color.CornflowerBlue);
+            spriteBatch.DrawString(fontNormal, Math.Round(updateRate.Framerate) + " updates per second", new Vector2(0, 0), Color.CornflowerBlue);
+            spriteBatch.DrawString(fontNormal, Math.Round(drawRate.Framerate) + " draws per second", new Vector2(0, 20), Color.CornflowerBlue);
+
             spriteBatch.DrawString(fontNormal, updateRate.LastLatency.TotalMilliseconds + "ms update latency", new Vector2(0, 40), Color.CornflowerBlue);
             spriteBatch.DrawString(fontNormal, drawRate.LastLatency.TotalMilliseconds + " ms draw latency", new Vector2(0, 60), Color.CornflowerBlue);
 
-            spriteBatch.DrawString(fontNormal, timer + " timer", new Vector2(0, 80), Color.CornflowerBlue);
-            spriteBatch.DrawString(fontNormal, timerDurationMs + " timer duration", new Vector2(0, 100), Color.CornflowerBlue);
+            spriteBatch.DrawString(fontNormal, MediaPlayer.PlayPosition.TotalMilliseconds + "ms player", new Vector2(0, 120), Color.Wheat);
+            spriteBatch.DrawString(fontNormal, audioStart.ElapsedMilliseconds + "ms stopwatch", new Vector2(0, 140), Color.Wheat);
 
-            spriteBatch.DrawString(fontNormal, MediaPlayer.PlayPosition.TotalMilliseconds + "ms player", new Vector2(0,120), Color.Wheat);
+            if (isDebug)
+            {
+                spriteBatch.DrawString(fontNormal, "debug build", new Vector2(0, 160), Color.IndianRed);
+            }
 
             spriteBatch.End();
 
             base.Draw(gameTime);
             drawRate.Update();
         }
-
-
     }
 }
