@@ -21,14 +21,16 @@ namespace Linesurf
         bool timerOn = false;
         SoundEffect effect = default!;
         Song song = default!;
-
+        
         bool debounce = false;
         bool isDebug = typeof(Program).Assembly.GetCustomAttribute<AssemblyConfigurationAttribute>()?.Configuration == "Debug";
-
+        bool a;
         Stopwatch audioStart = new Stopwatch();
 
         public static Texture2D Pixel = default!;
 
+        double bpmOffset = 60000d / 171.27;
+        double songOffset = 0;
         public LinesurfGame()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -64,12 +66,16 @@ namespace Linesurf
 
 
             MediaPlayer.Volume = 0.17f;
-            MediaPlayer.Play(song);
         }
 
 
         protected override void Update(GameTime gameTime)
         {
+            if (MediaPlayer.State == MediaState.Stopped)
+            {
+                MediaPlayer.Play(song);
+                timer = songOffset;
+            }
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
@@ -77,12 +83,13 @@ namespace Linesurf
             {
                 timer += updateRate.LastLatency.TotalMilliseconds;
 
-                if (timer % 500 < updateRate.LastLatency.TotalMilliseconds)
+                if (timer % bpmOffset < updateRate.LastLatency.TotalMilliseconds)
                 {
                     if (!debounce)
                     {
                         effect.Play(0.20f, 0f, 0f);
                         debounce = true;
+                        Console.Write("Ting! ");
                     }
                 }
                 else
@@ -90,7 +97,9 @@ namespace Linesurf
                     debounce = false;
                 }
             }
-
+            
+            Console.WriteLine("Update: {0} ms", updateRate.LastLatency.TotalMilliseconds);
+            
             base.Update(gameTime);
             updateRate.Update();
         }
@@ -108,11 +117,14 @@ namespace Linesurf
             spriteBatch.DrawString(fontNormal, drawRate.LastLatency.TotalMilliseconds + " ms draw latency", new Vector2(0, 60), Color.CornflowerBlue);
 
             spriteBatch.DrawString(fontNormal, MediaPlayer.PlayPosition.TotalMilliseconds + "ms player", new Vector2(0, 120), Color.Wheat);
-            spriteBatch.DrawString(fontNormal, timer + "ms timer", new Vector2(0, 140), Color.Wheat);
-
+            spriteBatch.DrawString(fontNormal, (int) timer + "ms timer", new Vector2(0, 140), Color.Wheat);
+            spriteBatch.DrawString(fontNormal, (int) (timer % bpmOffset) + "ms to beat", new Vector2(0,160), Color.White);
+            
+            
             if (isDebug)
             {
-                spriteBatch.DrawString(fontNormal, "debug build", new Vector2(0, 160), Color.IndianRed);
+
+                spriteBatch.DrawString(fontNormal, "debug build", new Vector2(GraphicsDevice.Viewport.Width-fontNormal.MeasureString("debug build").X, 0) , Color.IndianRed);
             }
 
             spriteBatch.End();
