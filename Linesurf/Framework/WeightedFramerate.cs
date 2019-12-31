@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace Linesurf
+namespace Linesurf.Framework
 {
     public struct WeightedFramerate
     {

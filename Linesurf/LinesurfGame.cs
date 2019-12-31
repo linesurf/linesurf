@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
+using Linesurf.Framework;
 using Linesurf.Framework.Utils;
-using Linesurf.Framework.Map;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;

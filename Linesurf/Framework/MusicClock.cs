@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using Linesurf.Framework.Utils;
 
-namespace Linesurf.Framework.Map
+namespace Linesurf.Framework
 {
     public struct MusicClock
     {
