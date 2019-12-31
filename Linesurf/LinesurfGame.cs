@@ -17,13 +17,16 @@ namespace Linesurf
 
         WeightedFramerate drawRate = new WeightedFramerate(6);
         WeightedFramerate updateRate = new WeightedFramerate(6);
-        double timer;
+
         bool timerOn = false;
         SoundEffect effect = default!;
         Song song = default!;
 
         bool debounce = false;
         bool isDebug = typeof(Program).Assembly.GetCustomAttribute<AssemblyConfigurationAttribute>()?.Configuration == "Debug";
+
+        const double offsetMs = 0;
+        const double bpm = 120;
 
         Stopwatch audioStart = new Stopwatch();
 
@@ -75,9 +78,7 @@ namespace Linesurf
 
             if (timerOn)
             {
-                timer += updateRate.LastLatency.TotalMilliseconds;
-
-                if (timer % 500 < updateRate.LastLatency.TotalMilliseconds)
+                if ((audioStart.Elapsed.TotalMilliseconds - offsetMs) % (60_000d / bpm) < drawRate.LastLatency.TotalMilliseconds)
                 {
                     if (!debounce)
                     {
@@ -108,7 +109,7 @@ namespace Linesurf
             spriteBatch.DrawString(fontNormal, drawRate.LastLatency.TotalMilliseconds + " ms draw latency", new Vector2(0, 60), Color.CornflowerBlue);
 
             spriteBatch.DrawString(fontNormal, MediaPlayer.PlayPosition.TotalMilliseconds + "ms player", new Vector2(0, 120), Color.Wheat);
-            spriteBatch.DrawString(fontNormal, timer + "ms timer", new Vector2(0, 140), Color.Wheat);
+            spriteBatch.DrawString(fontNormal, audioStart.Elapsed.TotalMilliseconds + "ms timer", new Vector2(0, 140), Color.Wheat);
 
             if (isDebug)
             {
@@ -119,6 +120,20 @@ namespace Linesurf
 
             base.Draw(gameTime);
             drawRate.Update();
+        }
+
+        protected override void OnDeactivated(object sender, EventArgs args)
+        {
+            MediaPlayer.Pause();
+            audioStart.Stop();
+            base.OnDeactivated(sender, args);
+        }
+
+        protected override void OnActivated(object sender, EventArgs args)
+        {
+            MediaPlayer.Resume();
+            audioStart.Start();
+            base.OnActivated(sender, args);
         }
     }
 }
