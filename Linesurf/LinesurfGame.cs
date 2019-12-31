@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Threading;
 using Linesurf.Framework.Utils;
+using Linesurf.Framework.Map;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
@@ -19,7 +20,7 @@ namespace Linesurf
 
         WeightedFramerate drawRate = new WeightedFramerate(6);
         WeightedFramerate updateRate = new WeightedFramerate(6);
-
+        
         bool timerOn = false;
         SoundEffect effect = default!;
         Song song = default!;
@@ -35,6 +36,8 @@ namespace Linesurf
 
         float bpmOffset = MusicUtils.ToMsOffset(171.27f);
         float songOffset = 0;
+
+        private MusicClock musicClock = new MusicClock(0, 171.27f);
         public LinesurfGame()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -59,12 +62,12 @@ namespace Linesurf
             spriteBatch = new SpriteBatch(GraphicsDevice);
             fontNormal = Content.Load<SpriteFont>("fontnormal");
             effect = Content.Load<SoundEffect>("normal-hitnormal");
-
+            
             song = Content.Load<Song>("shutter");
             MediaPlayer.MediaStateChanged += (sender, e) =>
             {
                 timerOn = true;
-                audioStart.Restart();
+                musicClock.audioStart.Restart();
             };
 
 
@@ -77,7 +80,7 @@ namespace Linesurf
             if (MediaPlayer.State == MediaState.Stopped)
             {
                 MediaPlayer.Play(song);
-                audioStart.Restart();
+                musicClock.audioStart.Restart();
             }
 
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
@@ -86,11 +89,11 @@ namespace Linesurf
             if (Keyboard.GetState().IsKeyDown(Keys.Space))
             {
                 MediaPlayer.Stop();
-                bpmOffset = new Random().Next(100, 1001);
+                musicClock.bpmOffset = new Random().Next(100, 1001);
             }
 
 
-            if (timerOn)
+            /*if (timerOn)
             {
                 if ((audioStart.Elapsed.TotalMilliseconds - songOffset) % bpmOffset < updateRate.LastLatency.TotalMilliseconds)
                 {
@@ -105,8 +108,18 @@ namespace Linesurf
                 {
                     debounce = false;
                 }
+                
+            }*/
+            if (timerOn)
+            {
+                if (musicClock.CheckBeat(ref updateRate) == true)
+                {
+                    effect.Play(0.20f, 0f, 0f);
+                    
+                    Console.Write("Ting! ");
+                }
             }
-
+            
             base.Update(gameTime);
             updateRate.Update();
         }
@@ -124,8 +137,8 @@ namespace Linesurf
             spriteBatch.DrawString(fontNormal, drawRate.LastLatency.TotalMilliseconds + " ms draw latency", new Vector2(0, 60), Color.CornflowerBlue);
 
             spriteBatch.DrawString(fontNormal, MediaPlayer.PlayPosition.TotalMilliseconds + "ms player", new Vector2(0, 120), Color.Wheat);
-            spriteBatch.DrawString(fontNormal, (int) audioStart.Elapsed.TotalMilliseconds + "ms timer", new Vector2(0, 140), Color.Wheat);
-            spriteBatch.DrawString(fontNormal, (int) (audioStart.Elapsed.TotalMilliseconds % bpmOffset) + "ms to beat", new Vector2(0, 160), Color.White);
+            spriteBatch.DrawString(fontNormal, (int) musicClock.audioStart.Elapsed.TotalMilliseconds + "ms timer", new Vector2(0, 140), Color.Wheat);
+            spriteBatch.DrawString(fontNormal, (int) (musicClock.audioStart.Elapsed.TotalMilliseconds % bpmOffset) + "ms to beat", new Vector2(0, 160), Color.White);
 
             if (isDebug)
             {
@@ -142,14 +155,14 @@ namespace Linesurf
         protected override void OnDeactivated(object sender, EventArgs args)
         {
             MediaPlayer.Pause();
-            audioStart.Stop();
+            musicClock.audioStart.Stop();
             base.OnDeactivated(sender, args);
         }
 
         protected override void OnActivated(object sender, EventArgs args)
         {
             MediaPlayer.Resume();
-            audioStart.Start();
+            musicClock.audioStart.Start();
             base.OnActivated(sender, args);
         }
     }
