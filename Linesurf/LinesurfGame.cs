@@ -17,7 +17,7 @@ namespace Linesurf
 
         WeightedFramerate drawRate = new WeightedFramerate(6);
         WeightedFramerate updateRate = new WeightedFramerate(6);
-
+        double timer;
         bool timerOn = false;
         SoundEffect effect = default!;
         Song song = default!;
@@ -75,11 +75,9 @@ namespace Linesurf
 
             if (timerOn)
             {
-                var ms = audioStart.Elapsed;
+                timer += updateRate.LastLatency.TotalMilliseconds;
 
-                var value = Math.Abs(ms.TotalMilliseconds % 500);
-
-                if (value < 5)
+                if (timer % 500 < updateRate.LastLatency.TotalMilliseconds)
                 {
                     if (!debounce)
                     {
@@ -94,6 +92,7 @@ namespace Linesurf
             }
 
             base.Update(gameTime);
+            updateRate.Update();
         }
 
 
@@ -109,7 +108,7 @@ namespace Linesurf
             spriteBatch.DrawString(fontNormal, drawRate.LastLatency.TotalMilliseconds + " ms draw latency", new Vector2(0, 60), Color.CornflowerBlue);
 
             spriteBatch.DrawString(fontNormal, MediaPlayer.PlayPosition.TotalMilliseconds + "ms player", new Vector2(0, 120), Color.Wheat);
-            spriteBatch.DrawString(fontNormal, audioStart.ElapsedMilliseconds + "ms stopwatch", new Vector2(0, 140), Color.Wheat);
+            spriteBatch.DrawString(fontNormal, timer + "ms timer", new Vector2(0, 140), Color.Wheat);
 
             if (isDebug)
             {
