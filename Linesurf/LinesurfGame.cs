@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Reflection;
+using System.Threading;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
@@ -21,17 +22,16 @@ namespace Linesurf
         bool timerOn = false;
         SoundEffect effect = default!;
         Song song = default!;
-
+        
         bool debounce = false;
         bool isDebug = typeof(Program).Assembly.GetCustomAttribute<AssemblyConfigurationAttribute>()?.Configuration == "Debug";
-
-        const double offsetMs = 0;
-        const double bpm = 120;
 
         Stopwatch audioStart = new Stopwatch();
 
         public static Texture2D Pixel = default!;
 
+        double bpmOffset = 60_000d / 171.27;
+        double songOffset = 4000;
         public LinesurfGame()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -41,7 +41,6 @@ namespace Linesurf
             IsFixedTimeStep = true;
             Window.AllowUserResizing = true;
 
-            //songPosition = new Stopwatch();
             TargetElapsedTime = TimeSpan.FromMilliseconds(1);
         }
 
@@ -66,24 +65,34 @@ namespace Linesurf
             };
 
 
-            MediaPlayer.Volume = 0.17f;
-            MediaPlayer.Play(song);
+            MediaPlayer.Volume = 0;
         }
 
 
         protected override void Update(GameTime gameTime)
         {
+            if (MediaPlayer.State == MediaState.Stopped)
+            {
+                MediaPlayer.Play(song);
+                audioStart.Restart();
+            }
+
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            if (Keyboard.GetState().IsKeyDown(Keys.Space))
+                MediaPlayer.Stop();
+
+
             if (timerOn)
             {
-                if ((audioStart.Elapsed.TotalMilliseconds - offsetMs) % (60_000d / bpm) < drawRate.LastLatency.TotalMilliseconds)
+                if ((audioStart.Elapsed.TotalMilliseconds - songOffset) % bpmOffset < updateRate.LastLatency.TotalMilliseconds)
                 {
                     if (!debounce)
                     {
                         effect.Play(0.20f, 0f, 0f);
                         debounce = true;
+                        Console.Write("Ting! ");
                     }
                 }
                 else
@@ -91,7 +100,9 @@ namespace Linesurf
                     debounce = false;
                 }
             }
-
+            
+            // Console.WriteLine("Update: {0} ms", updateRate.LastLatency.TotalMilliseconds);
+            
             base.Update(gameTime);
             updateRate.Update();
         }
@@ -109,11 +120,13 @@ namespace Linesurf
             spriteBatch.DrawString(fontNormal, drawRate.LastLatency.TotalMilliseconds + " ms draw latency", new Vector2(0, 60), Color.CornflowerBlue);
 
             spriteBatch.DrawString(fontNormal, MediaPlayer.PlayPosition.TotalMilliseconds + "ms player", new Vector2(0, 120), Color.Wheat);
-            spriteBatch.DrawString(fontNormal, audioStart.Elapsed.TotalMilliseconds + "ms timer", new Vector2(0, 140), Color.Wheat);
-
+            spriteBatch.DrawString(fontNormal, (int) audioStart.Elapsed.TotalMilliseconds + "ms timer", new Vector2(0, 140), Color.Wheat);
+            spriteBatch.DrawString(fontNormal, (int) (audioStart.Elapsed.TotalMilliseconds % bpmOffset) + "ms to beat", new Vector2(0,160), Color.White);
+          
             if (isDebug)
             {
-                spriteBatch.DrawString(fontNormal, "debug build", new Vector2(0, 160), Color.IndianRed);
+
+                spriteBatch.DrawString(fontNormal, "debug build", new Vector2(GraphicsDevice.Viewport.Width-fontNormal.MeasureString("debug build").X, 0) , Color.IndianRed);
             }
 
             spriteBatch.End();
