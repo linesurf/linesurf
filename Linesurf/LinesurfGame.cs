@@ -22,16 +22,18 @@ namespace Linesurf
         bool timerOn = false;
         SoundEffect effect = default!;
         Song song = default!;
-        
+
         bool debounce = false;
         bool isDebug = typeof(Program).Assembly.GetCustomAttribute<AssemblyConfigurationAttribute>()?.Configuration == "Debug";
 
         Stopwatch audioStart = new Stopwatch();
 
+        float Timer => audioStart.Elapsed.Milliseconds;
+
         public static Texture2D Pixel = default!;
 
-        double bpmOffset = 60_000d / 171.27;
-        double songOffset = 4000;
+        float bpmOffset = 60_000f / 171.27f;
+        float songOffset = 0;
         public LinesurfGame()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -65,7 +67,7 @@ namespace Linesurf
             };
 
 
-            MediaPlayer.Volume = 0;
+            MediaPlayer.Volume = 0.175f;
         }
 
 
@@ -81,7 +83,10 @@ namespace Linesurf
                 Exit();
 
             if (Keyboard.GetState().IsKeyDown(Keys.Space))
+            {
                 MediaPlayer.Stop();
+                bpmOffset = new Random().Next(100, 1001);
+            }
 
 
             if (timerOn)
@@ -100,9 +105,7 @@ namespace Linesurf
                     debounce = false;
                 }
             }
-            
-            // Console.WriteLine("Update: {0} ms", updateRate.LastLatency.TotalMilliseconds);
-            
+
             base.Update(gameTime);
             updateRate.Update();
         }
@@ -110,23 +113,23 @@ namespace Linesurf
 
         protected override void Draw(GameTime gameTime)
         {
-            graphics.GraphicsDevice.Clear(Color.DimGray);
+            graphics.GraphicsDevice.Clear(new Color((uint) Map(MathF.Pow(Timer % bpmOffset, 3), MathF.Pow(bpmOffset, 3), 0, 0, 255)));
             spriteBatch.Begin();
 
-            spriteBatch.DrawString(fontNormal, Math.Round(updateRate.Framerate) + " updates per second", new Vector2(0, 0), Color.CornflowerBlue);
-            spriteBatch.DrawString(fontNormal, Math.Round(drawRate.Framerate) + " draws per second", new Vector2(0, 20), Color.CornflowerBlue);
+            spriteBatch.DrawString(fontNormal, MathF.Round(updateRate.Framerate) + " updates per second", new Vector2(0, 0), Color.CornflowerBlue);
+            spriteBatch.DrawString(fontNormal, MathF.Round(drawRate.Framerate) + " draws per second", new Vector2(0, 20), Color.CornflowerBlue);
 
             spriteBatch.DrawString(fontNormal, updateRate.LastLatency.TotalMilliseconds + "ms update latency", new Vector2(0, 40), Color.CornflowerBlue);
             spriteBatch.DrawString(fontNormal, drawRate.LastLatency.TotalMilliseconds + " ms draw latency", new Vector2(0, 60), Color.CornflowerBlue);
 
             spriteBatch.DrawString(fontNormal, MediaPlayer.PlayPosition.TotalMilliseconds + "ms player", new Vector2(0, 120), Color.Wheat);
             spriteBatch.DrawString(fontNormal, (int) audioStart.Elapsed.TotalMilliseconds + "ms timer", new Vector2(0, 140), Color.Wheat);
-            spriteBatch.DrawString(fontNormal, (int) (audioStart.Elapsed.TotalMilliseconds % bpmOffset) + "ms to beat", new Vector2(0,160), Color.White);
-          
+            spriteBatch.DrawString(fontNormal, (int) (audioStart.Elapsed.TotalMilliseconds % bpmOffset) + "ms to beat", new Vector2(0, 160), Color.White);
+
             if (isDebug)
             {
 
-                spriteBatch.DrawString(fontNormal, "debug build", new Vector2(GraphicsDevice.Viewport.Width-fontNormal.MeasureString("debug build").X, 0) , Color.IndianRed);
+                spriteBatch.DrawString(fontNormal, "debug build", new Vector2(GraphicsDevice.Viewport.Width - fontNormal.MeasureString("debug build").X, 0), Color.IndianRed);
             }
 
             spriteBatch.End();
@@ -147,6 +150,11 @@ namespace Linesurf
             MediaPlayer.Resume();
             audioStart.Start();
             base.OnActivated(sender, args);
+        }
+
+        public static float Map(float value, float fromLow, float fromHigh, float toLow, float toHigh) 
+        {
+            return (value - fromLow) * (toHigh - toLow) / (fromHigh - fromLow) + toLow;
         }
     }
 }

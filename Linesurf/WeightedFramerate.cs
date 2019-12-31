@@ -5,15 +5,15 @@ namespace Linesurf
 {
     public struct WeightedFramerate
     {
-        double currentFrametimes;
-        double weight;
+        float currentFrametimes;
+        float weight;
         int numerator;
 
         public Stopwatch Stopwatch { get; }
 
         public TimeSpan LastLatency { get; private set; }
 
-        public double Framerate => numerator / currentFrametimes is var framerate && double.IsInfinity(framerate) ? 0 : framerate;
+        public float Framerate => numerator / currentFrametimes is var framerate && float.IsInfinity(framerate) ? 0 : framerate;
 
         public WeightedFramerate(int oldFrameWeight)
         {
@@ -21,13 +21,13 @@ namespace Linesurf
             Stopwatch = new Stopwatch();
             currentFrametimes = 0;
             numerator = oldFrameWeight;
-            weight = oldFrameWeight / (oldFrameWeight - 1d);
+            weight = oldFrameWeight / (oldFrameWeight - 1f);
         }
 
         public void Update()
         {
             LastLatency = Stopwatch.Elapsed;
-            var timeSinceLastFrame = Stopwatch.Elapsed.TotalSeconds;
+            var timeSinceLastFrame = (float) Stopwatch.Elapsed.TotalSeconds;
             currentFrametimes /= weight;
             currentFrametimes += timeSinceLastFrame;
             Stopwatch.Restart();
