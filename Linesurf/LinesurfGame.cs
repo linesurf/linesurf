@@ -25,7 +25,7 @@ namespace Linesurf
         SoundEffect effect = default!;
         Song song = default!;
 
-        bool debounce = false;
+        
         bool isDebug = typeof(Program).Assembly.GetCustomAttribute<AssemblyConfigurationAttribute>()?.Configuration == "Debug";
 
         Stopwatch audioStart = new Stopwatch();
@@ -34,8 +34,7 @@ namespace Linesurf
 
         public static Texture2D Pixel = default!;
 
-        float bpmOffset = MusicUtils.ToMsOffset(171.27f);
-        float songOffset = 0;
+        
 
         private MusicClock musicClock = new MusicClock(0, 171.27f);
         public LinesurfGame()
@@ -138,7 +137,7 @@ namespace Linesurf
 
             spriteBatch.DrawString(fontNormal, MediaPlayer.PlayPosition.TotalMilliseconds + "ms player", new Vector2(0, 120), Color.Wheat);
             spriteBatch.DrawString(fontNormal, (int) musicClock.audioStart.Elapsed.TotalMilliseconds + "ms timer", new Vector2(0, 140), Color.Wheat);
-            spriteBatch.DrawString(fontNormal, (int) (musicClock.audioStart.Elapsed.TotalMilliseconds % bpmOffset) + "ms to beat", new Vector2(0, 160), Color.White);
+            spriteBatch.DrawString(fontNormal, (int) (musicClock.audioStart.Elapsed.TotalMilliseconds % musicClock.bpmOffset) + "ms to beat", new Vector2(0, 160), Color.White);
 
             if (isDebug)
             {
