@@ -1,48 +1,41 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using Linesurf.Framework.Utils;
+
 namespace Linesurf.Framework.Map
 {
-   
-    
-    public struct MusicClock 
+    public struct MusicClock
     {
-        public Stopwatch audioStart;
-        public bool debounce;
-        public float songOffset;
-        public float bpmOffset;
-        public float bpm;
+        public readonly Stopwatch AudioStart;
+        public bool Debounce;
+        public float SongOffset;
+        public float BpmOffset;
+        public float Bpm;
+
         /// <summary>
         /// A basic clock to keep track of the time into a song; Create when the song starts.
         /// </summary>
-        /// <param name="Offset">The exact time when the song starts in milliseconds.</param>
-        /// <param name="songbpm">The beats per minute of the song.</param>
-        public MusicClock(float Offset, float songbpm)
+        /// <param name="offset">The exact time when the song starts in milliseconds.</param>
+        /// <param name="songBpm">The beats per minute of the song.</param>
+        public MusicClock(float offset, float songBpm)
         {
-            audioStart = new Stopwatch();
-            bpmOffset = MusicUtils.ToMsOffset(songbpm);
-            bpm = songbpm;
-            songOffset = Offset;
-            debounce = false;
+            AudioStart = new Stopwatch();
+            BpmOffset = MusicUtils.ToMsOffset(songBpm);
+            Bpm = songBpm;
+            SongOffset = offset;
+            Debounce = false;
         }
+
         public bool CheckBeat(ref WeightedFramerate updateRate)
         {
-            if ((audioStart.Elapsed.TotalMilliseconds - songOffset) % bpmOffset < updateRate.LastLatency.TotalMilliseconds)
+            if ((AudioStart.Elapsed.TotalMilliseconds - SongOffset) % BpmOffset <
+                updateRate.LastLatency.TotalMilliseconds)
             {
-                if (!debounce)
-                {
-                    
-                    debounce = true;
-                    return true;
-                }
+                if (Debounce) return false;
+                Debounce = true;
+                return true;
             }
-            else
-            {
-                debounce = false;
-                return false;
-            }
+
+            Debounce = false;
             return false;
         }
     }

@@ -1,4 +1,4 @@
-﻿namespace Linesurf.Framework.Map
+﻿namespace Linesurf.Framework.Map.Objects
 {
     public class Arrow : HitObject
     {
@@ -7,8 +7,9 @@
 
     public enum ArrowDirection
     {
-            Up,
-        Left, Right,
-           Down
+        Up,
+        Left,
+        Right,
+        Down
     }
 }

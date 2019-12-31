@@ -13,8 +13,13 @@ namespace Linesurf.Framework.UI
         protected string width = default!;
         protected string height = default!;
 
-        public Rectangle ElementRect { get => elementRect; }
+        public Rectangle ElementRect
+        {
+            get => elementRect;
+        }
+
         public AnchorPoint AnchorPoint;
+
         public string XPosition
         {
             get => xPosition;
@@ -42,7 +47,6 @@ namespace Linesurf.Framework.UI
             {
                 width = value;
                 ParseRectangle();
-                    
             }
         }
 
@@ -64,7 +68,7 @@ namespace Linesurf.Framework.UI
             if (int.TryParse(xPosition, NumberStyles.Integer, CultureInfo.InvariantCulture, out i))
             {
                 if (i < 0) x = parent.ElementRect.Width - i;
-                else x = i; 
+                else x = i;
             }
             else if (xPosition.EndsWith('%'))
             {
@@ -73,12 +77,12 @@ namespace Linesurf.Framework.UI
                 if (i < 0 || i > 100) throw new FormatException("Percentage should be between 0% and 100%");
                 x = (int) (parent.ElementRect.Width * (i / 100f));
             }
-            
+
             //ypos
             if (int.TryParse(yPosition, NumberStyles.Integer, CultureInfo.InvariantCulture, out i))
             {
                 if (i < 0) y = parent.ElementRect.Height - i;
-                else y = i; 
+                else y = i;
             }
             else if (yPosition.EndsWith('%'))
             {

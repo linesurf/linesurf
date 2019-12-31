@@ -6,14 +6,16 @@ namespace Linesurf
     public struct WeightedFramerate
     {
         float currentFrametimes;
-        float weight;
-        int numerator;
+        readonly float weight;
+        readonly int numerator;
 
         public Stopwatch Stopwatch { get; }
 
         public TimeSpan LastLatency { get; private set; }
 
-        public float Framerate => numerator / currentFrametimes is var framerate && float.IsInfinity(framerate) ? 0 : framerate;
+        public float Framerate => numerator / currentFrametimes is var framerate && float.IsInfinity(framerate)
+            ? 0
+            : framerate;
 
         public WeightedFramerate(int oldFrameWeight)
         {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Linesurf.Framework.Map
+namespace Linesurf.Framework.Map.Objects
 {
     public abstract class HitObject
     {

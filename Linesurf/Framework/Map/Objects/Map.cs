@@ -1,7 +1,7 @@
 ﻿using System.Collections.Immutable;
 using Microsoft.Xna.Framework.Media;
 
-namespace Linesurf.Framework.Map
+namespace Linesurf.Framework.Map.Objects
 {
     public class Map
     {

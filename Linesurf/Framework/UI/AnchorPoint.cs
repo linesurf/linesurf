@@ -2,8 +2,14 @@
 {
     public enum AnchorPoint
     {
-        TopLeft,    TopMid,    TopRight,
-        MidLeft,    Middle,    MidRight,
-        BottomLeft, BottomMid, BottomRight
+        TopLeft,
+        TopMid,
+        TopRight,
+        MidLeft,
+        Middle,
+        MidRight,
+        BottomLeft,
+        BottomMid,
+        BottomRight
     }
 }

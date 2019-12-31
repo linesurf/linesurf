@@ -1,9 +1,9 @@
 ﻿using System;
 
-namespace Linesurf.Framework.Map
+namespace Linesurf.Framework.Map.Objects
 {
     public class Slider : HitObject
     {
-        public TimeSpan SliderLength { get; } 
+        public TimeSpan SliderLength { get; }
     }
 }
