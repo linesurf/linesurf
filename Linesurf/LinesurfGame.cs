@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Reflection;
 using System.Threading;
+using Linesurf.Framework.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
@@ -32,7 +33,7 @@ namespace Linesurf
 
         public static Texture2D Pixel = default!;
 
-        float bpmOffset = 60_000f / 171.27f;
+        float bpmOffset = MusicUtils.ToMsOffset(171.27f);
         float songOffset = 0;
         public LinesurfGame()
         {
@@ -113,7 +114,7 @@ namespace Linesurf
 
         protected override void Draw(GameTime gameTime)
         {
-            graphics.GraphicsDevice.Clear(new Color((uint) Map(MathF.Pow(Timer % bpmOffset, 3), MathF.Pow(bpmOffset, 3), 0, 0, 255)));
+            graphics.GraphicsDevice.Clear(Color.CornflowerBlue.Darken(70));
             spriteBatch.Begin();
 
             spriteBatch.DrawString(fontNormal, MathF.Round(updateRate.Framerate) + " updates per second", new Vector2(0, 0), Color.CornflowerBlue);
@@ -150,11 +151,6 @@ namespace Linesurf
             MediaPlayer.Resume();
             audioStart.Start();
             base.OnActivated(sender, args);
-        }
-
-        public static float Map(float value, float fromLow, float fromHigh, float toLow, float toHigh) 
-        {
-            return (value - fromLow) * (toHigh - toLow) / (fromHigh - fromLow) + toLow;
         }
     }
 }
