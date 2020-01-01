@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Globalization;
 using Microsoft.Xna.Framework;
-
-namespace Linesurf.Framework.UI
+using Linesurf.Framework.UI.Organization;
+namespace Linesurf.Framework.UI.Components
 {
     public abstract class UIElement
     {

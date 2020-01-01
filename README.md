@@ -1,5 +1,8 @@
-# linesurf
-according to royce its *"Project Mirai, but on drugs"*. and thats basically what it is 
+# Linesurf
+A rhythm game based on Project Mirai with some extra features to hopefully make things more unique and interesting :)
+Currently in heavy development n'stuff
 
+## Links
+[Discord](https://discord.gg/9GmMVuD) (This has all of the information you need about code standard guidelines, plans, development, feedback, etc.)
 ## Credits
-Contemporary Font by vicr123
+**Raleway** Font Family Copyright (c) 2010, Licensed under the SIL Open Font License, Version 1.1

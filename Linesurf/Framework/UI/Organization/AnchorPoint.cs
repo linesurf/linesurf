@@ -1,4 +1,4 @@
-﻿namespace Linesurf.Framework.UI
+﻿namespace Linesurf.Framework.UI.Organization
 {
     public enum AnchorPoint
     {
