@@ -3,6 +3,6 @@ A rhythm game based on Project Mirai with some extra features to hopefully make 
 Currently in heavy development n'stuff
 
 ## Links
-[Discprd](https://discord.gg/9GmMVuD) **This has all of the information you need about code standard guidelines, plans, development, feedback, etc.**
+[Discord](https://discord.gg/9GmMVuD) (This has all of the information you need about code standard guidelines, plans, development, feedback, etc.)
 ## Credits
 **Raleway** Font Family Copyright (c) 2010, Licensed under the SIL Open Font License, Version 1.1
