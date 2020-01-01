@@ -22,7 +22,7 @@ namespace Linesurf
         bool timerOn = false;
         SoundEffect effect = default!;
         Song song = default!;
-
+        bool visualBeat;
 
         readonly bool isDebug = typeof(Program).Assembly.GetCustomAttribute<AssemblyConfigurationAttribute>()?.Configuration ==
                        "Debug";
@@ -67,6 +67,8 @@ namespace Linesurf
 
         protected override void Update(GameTime gameTime)
         {
+            updateRate.Update();
+
             if (MediaPlayer.State == MediaState.Stopped)
             {
                 MediaPlayer.Play(song);
@@ -103,19 +105,21 @@ namespace Linesurf
             {
                 if (musicClock.CheckBeat(ref updateRate))
                 {
+                    visualBeat = true;
                     effect.Play(0.20f, 0f, -1f);
-
+                    
                     Console.Write("Ting! ");
                 }
             }
 
             base.Update(gameTime);
-            updateRate.Update();
         }
 
 
         protected override void Draw(GameTime gameTime)
         {
+            drawRate.Update();
+
             graphics.GraphicsDevice.Clear(Color.CornflowerBlue.Darken(70));
             spriteBatch.Begin();
 
@@ -136,7 +140,12 @@ namespace Linesurf
             spriteBatch.DrawString(fontNormal,
                 (int) (musicClock.AudioStart.Elapsed.TotalMilliseconds % musicClock.BpmOffset) + "ms to beat",
                 new Vector2(0, 160), Color.White);
-
+            if (visualBeat)
+            {
+                spriteBatch.DrawString(fontNormal,
+                    "Ting!",
+                    new Vector2(0, 180), Color.White);
+            }
             if (isDebug)
             {
                 spriteBatch.DrawString(fontNormal, "debug build",
@@ -145,9 +154,8 @@ namespace Linesurf
             }
 
             spriteBatch.End();
-
+            visualBeat = false;
             base.Draw(gameTime);
-            drawRate.Update();
         }
 
         protected override void OnDeactivated(object sender, EventArgs args)
