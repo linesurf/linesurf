@@ -6,12 +6,15 @@ namespace Linesurf.Framework
 {
     public struct MusicClock
     {
+        double snapshotElapsed;
+        
         public readonly Stopwatch AudioStart;
         public bool Debounce;
         public float SongOffset;
         public float BpmOffset;
         public float Bpm;
 
+        
         /// <summary>
         /// A basic clock to keep track of the time into a song; Create when the song starts.
         /// </summary>
@@ -24,6 +27,7 @@ namespace Linesurf.Framework
             Bpm = songBpm;
             SongOffset = offset;
             Debounce = false;
+            snapshotElapsed = 0;
         }
         /// <summary>
         /// Returns true if the current millisecond the clock is on is a beat.
@@ -32,7 +36,7 @@ namespace Linesurf.Framework
         /// <returns></returns>
         public bool CheckBeat(ref WeightedFramerate updateRate)
         {
-            if (Math.Abs((AudioStart.Elapsed.TotalMilliseconds - SongOffset) % BpmOffset) < 
+            if (Math.Abs((snapshotElapsed - SongOffset) % BpmOffset) < 
                 updateRate.LastLatency.TotalMilliseconds)
             {
                 if (Debounce) return false;
@@ -42,6 +46,11 @@ namespace Linesurf.Framework
 
             Debounce = false;
             return false;
+        }
+
+        public void Snapshot()
+        {
+            snapshotElapsed = AudioStart.Elapsed.TotalMilliseconds;
         }
     }
 }

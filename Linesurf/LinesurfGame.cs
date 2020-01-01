@@ -30,7 +30,7 @@ namespace Linesurf
         public static Texture2D Pixel = default!;
 
 
-        MusicClock musicClock = new MusicClock(54, 120f);
+        MusicClock musicClock = new MusicClock(510, 120f);
 
         public LinesurfGame()
         {
@@ -68,7 +68,7 @@ namespace Linesurf
         protected override void Update(GameTime gameTime)
         {
             updateRate.Update();
-
+            musicClock.Snapshot();
             if (MediaPlayer.State == MediaState.Stopped)
             {
                 MediaPlayer.Play(song);
