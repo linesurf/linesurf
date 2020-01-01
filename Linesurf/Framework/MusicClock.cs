@@ -47,7 +47,10 @@ namespace Linesurf.Framework
             Debounce = false;
             return false;
         }
-
+        /// <summary>
+        /// Takes a snapshot of the current time of <see cref="AudioStart"/>.
+        /// Call on every update.
+        /// </summary>
         public void Snapshot()
         {
             snapshotElapsed = AudioStart.Elapsed.TotalMilliseconds;
