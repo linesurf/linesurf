@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using Linesurf.Framework.Utils;
 
 namespace Linesurf.Framework
@@ -31,7 +32,7 @@ namespace Linesurf.Framework
         /// <returns></returns>
         public bool CheckBeat(ref WeightedFramerate updateRate)
         {
-            if ((AudioStart.Elapsed.TotalMilliseconds - SongOffset) % BpmOffset <
+            if (Math.Abs((AudioStart.Elapsed.TotalMilliseconds - SongOffset) % BpmOffset) < 
                 updateRate.LastLatency.TotalMilliseconds)
             {
                 if (Debounce) return false;

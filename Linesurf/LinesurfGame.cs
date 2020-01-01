@@ -30,7 +30,7 @@ namespace Linesurf
         public static Texture2D Pixel = default!;
 
 
-        MusicClock musicClock = new MusicClock(0, 171.27f);
+        MusicClock musicClock = new MusicClock(54, 120f);
 
         public LinesurfGame()
         {
@@ -103,7 +103,7 @@ namespace Linesurf
             {
                 if (musicClock.CheckBeat(ref updateRate))
                 {
-                    effect.Play(0.20f, 0f, 0f);
+                    effect.Play(0.20f, 0f, -1f);
 
                     Console.Write("Ting! ");
                 }
