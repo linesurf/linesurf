@@ -30,7 +30,20 @@ namespace Linesurf
         public static Texture2D Pixel = default!;
 
 
-        MusicClock musicClock = new MusicClock(510, 120f);
+        MusicClock musicClock = new MusicClock(
+            new TimingPoint(54, 120),
+            new TimingPoint(44500, 115),
+            new TimingPoint(45055, 110),
+            new TimingPoint(45602,105),
+            new TimingPoint(46174,100),
+            new TimingPoint(46785, 95f),
+            new TimingPoint(47408, 90),
+            new TimingPoint(58750, 96),
+            new TimingPoint(59388, 102),
+            new TimingPoint(60002, 108),
+            new TimingPoint(60587, 114),
+            new TimingPoint(61040, 120)
+            );
 
         public LinesurfGame()
         {
@@ -57,10 +70,11 @@ namespace Linesurf
             fontNormal = Content.Load<SpriteFont>("fontnormal");
             effect = Content.Load<SoundEffect>("normal-hitnormal");
 
-            song = Content.Load<Song>("shutter");
+            song = Content.Load<Song>("music");
             MediaPlayer.MediaStateChanged += (sender, e) => { timerOn = true; };
-
-            musicClock.AudioStart.Restart();
+            
+            MediaPlayer.Play(song);
+            musicClock.AudioTime.Restart();
             MediaPlayer.Volume = 0.175f;
         }
 
@@ -68,11 +82,7 @@ namespace Linesurf
         protected override void Update(GameTime gameTime)
         {
             updateRate.Update();
-            musicClock.Snapshot();
-            if (MediaPlayer.State == MediaState.Stopped)
-            {
-                MediaPlayer.Play(song);
-            }
+            musicClock.Snapshot(ref updateRate);
 
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
@@ -86,7 +96,7 @@ namespace Linesurf
 
             /*if (timerOn)
             {
-                if ((audioStart.Elapsed.TotalMilliseconds - songOffset) % bpmOffset < updateRate.LastLatency.TotalMilliseconds)
+                if ((audioStart.Elapsed.TotalMilliseconds - songOffset) % bpmOffset < updateRate.LastMilliseconds)
                 {
                     if (!debounce)
                     {
@@ -128,24 +138,26 @@ namespace Linesurf
             spriteBatch.DrawString(fontNormal, MathF.Round(drawRate.Framerate) + " draws per second",
                 new Vector2(0, 20), Color.CornflowerBlue);
 
-            spriteBatch.DrawString(fontNormal, updateRate.LastLatency.TotalMilliseconds + "ms update latency",
+            spriteBatch.DrawString(fontNormal, updateRate.LastMilliseconds + "ms update latency",
                 new Vector2(0, 40), Color.CornflowerBlue);
             spriteBatch.DrawString(fontNormal, drawRate.LastLatency.TotalMilliseconds + " ms draw latency",
                 new Vector2(0, 60), Color.CornflowerBlue);
 
             spriteBatch.DrawString(fontNormal, MediaPlayer.PlayPosition.TotalMilliseconds + "ms player",
                 new Vector2(0, 120), Color.Wheat);
-            spriteBatch.DrawString(fontNormal, (int) musicClock.AudioStart.Elapsed.TotalMilliseconds + "ms timer",
+            spriteBatch.DrawString(fontNormal, (int) musicClock.AudioTime.Elapsed.TotalMilliseconds + "ms timer",
                 new Vector2(0, 140), Color.Wheat);
             spriteBatch.DrawString(fontNormal,
-                (int) (musicClock.AudioStart.Elapsed.TotalMilliseconds % musicClock.BpmOffset) + "ms to beat",
+                (int) (musicClock.AudioTime.Elapsed.TotalMilliseconds % musicClock.BpmOffset) + "ms to beat",
                 new Vector2(0, 160), Color.White);
-            if (visualBeat)
-            {
-                spriteBatch.DrawString(fontNormal,
-                    "Ting!",
-                    new Vector2(0, 180), Color.White);
-            }
+            
+            spriteBatch.DrawString(fontNormal,
+                String.Format("{0} bpm ({1} ms)", musicClock.Bpm, musicClock.BpmOffset), 
+                new Vector2(0, 180), Color.White);
+            
+            spriteBatch.DrawString(fontNormal,
+                musicClock.SongOffset + "ms offset", new Vector2(0, 200), Color.White);
+
             if (isDebug)
             {
                 spriteBatch.DrawString(fontNormal, "debug build",
@@ -161,14 +173,14 @@ namespace Linesurf
         protected override void OnDeactivated(object sender, EventArgs args)
         {
             MediaPlayer.Pause();
-            musicClock.AudioStart.Stop();
+            musicClock.AudioTime.Stop();
             base.OnDeactivated(sender, args);
         }
 
         protected override void OnActivated(object sender, EventArgs args)
         {
             MediaPlayer.Resume();
-            musicClock.AudioStart.Start();
+            musicClock.AudioTime.Start();
             base.OnActivated(sender, args);
         }
     }

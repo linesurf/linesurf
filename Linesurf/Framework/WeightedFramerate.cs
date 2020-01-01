@@ -13,6 +13,8 @@ namespace Linesurf.Framework
 
         public TimeSpan LastLatency { get; private set; }
 
+        public double LastMilliseconds => LastLatency.TotalMilliseconds;
+        
         public float Framerate => numerator / currentFrametimes is var framerate && float.IsInfinity(framerate)
             ? 0
             : framerate;
