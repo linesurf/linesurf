@@ -68,7 +68,7 @@ namespace Linesurf
         protected override void Update(GameTime gameTime)
         {
             updateRate.Update();
-
+            musicClock.Snapshot();
             if (MediaPlayer.State == MediaState.Stopped)
             {
                 MediaPlayer.Play(song);
