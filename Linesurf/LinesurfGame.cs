@@ -22,7 +22,6 @@ namespace Linesurf
         bool timerOn = false;
         SoundEffect effect = default!;
         Song song = default!;
-        bool visualBeat;
 
         readonly bool isDebug = typeof(Program).Assembly.GetCustomAttribute<AssemblyConfigurationAttribute>()?.Configuration ==
                        "Debug";
@@ -34,16 +33,15 @@ namespace Linesurf
             new TimingPoint(54, 120),
             new TimingPoint(44500, 115),
             new TimingPoint(45055, 110),
-            new TimingPoint(45602,105),
-            new TimingPoint(46174,100),
+            new TimingPoint(45602, 105),
+            new TimingPoint(46174, 100),
             new TimingPoint(46785, 95f),
             new TimingPoint(47408, 90),
             new TimingPoint(58750, 96),
             new TimingPoint(59388, 102),
             new TimingPoint(60002, 108),
             new TimingPoint(60587, 114),
-            new TimingPoint(61040, 120)
-            );
+            new TimingPoint(61040, 120));
 
         public LinesurfGame()
         {
@@ -52,7 +50,6 @@ namespace Linesurf
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
             IsFixedTimeStep = true;
-            Window.AllowUserResizing = true;
 
             TargetElapsedTime = TimeSpan.FromMilliseconds(1);
         }
@@ -60,7 +57,7 @@ namespace Linesurf
         protected override void Initialize()
         {
             Pixel = new Texture2D(GraphicsDevice, 1, 1);
-            Pixel.SetData(new[] {Color.White});
+            Pixel.SetData(new[] { Color.White });
             base.Initialize();
         }
 
@@ -72,7 +69,7 @@ namespace Linesurf
 
             song = Content.Load<Song>("music");
             MediaPlayer.MediaStateChanged += (sender, e) => { timerOn = true; };
-            
+
             MediaPlayer.Play(song);
             musicClock.AudioTime.Restart();
             MediaPlayer.Volume = 0.175f;
@@ -82,42 +79,17 @@ namespace Linesurf
         protected override void Update(GameTime gameTime)
         {
             updateRate.Update();
-            musicClock.Snapshot(ref updateRate);
+            musicClock.Snapshot(updateRate);
 
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Space))
-            {
-                MediaPlayer.Stop();
-                musicClock.BpmOffset = new Random().Next(100, 1001);
-            }
-
-
-            /*if (timerOn)
-            {
-                if ((audioStart.Elapsed.TotalMilliseconds - songOffset) % bpmOffset < updateRate.LastMilliseconds)
-                {
-                    if (!debounce)
-                    {
-                        effect.Play(0.20f, 0f, 0f);
-                        debounce = true;
-                        Console.Write("Ting! ");
-                    }
-                }
-                else
-                {
-                    debounce = false;
-                }
-                
-            }*/
             if (timerOn)
             {
-                if (musicClock.CheckBeat(ref updateRate))
+                if (musicClock.CheckBeat(updateRate))
                 {
-                    visualBeat = true;
                     effect.Play(0.20f, 0f, -1f);
-                    
+
                     Console.Write("Ting! ");
                 }
             }
@@ -150,11 +122,11 @@ namespace Linesurf
             spriteBatch.DrawString(fontNormal,
                 (int) (musicClock.AudioTime.Elapsed.TotalMilliseconds % musicClock.BpmOffset) + "ms to beat",
                 new Vector2(0, 160), Color.White);
-            
+
             spriteBatch.DrawString(fontNormal,
-                String.Format("{0} bpm ({1} ms)", musicClock.Bpm, musicClock.BpmOffset), 
+                String.Format("{0} bpm ({1} ms)", musicClock.Bpm, musicClock.BpmOffset),
                 new Vector2(0, 180), Color.White);
-            
+
             spriteBatch.DrawString(fontNormal,
                 musicClock.SongOffset + "ms offset", new Vector2(0, 200), Color.White);
 
@@ -166,7 +138,6 @@ namespace Linesurf
             }
 
             spriteBatch.End();
-            visualBeat = false;
             base.Draw(gameTime);
         }
 
