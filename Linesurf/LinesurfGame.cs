@@ -15,7 +15,7 @@ namespace Linesurf
         readonly GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch = default!;
         SpriteFont fontNormal = default!;
-
+        public static string UpdateToDrawLog = "";
         WeightedFramerate drawRate = new WeightedFramerate(6);
         WeightedFramerate updateRate = new WeightedFramerate(6);
 
@@ -80,7 +80,7 @@ namespace Linesurf
         protected override void Update(GameTime gameTime)
         {
             updateRate.Update();
-
+            UpdateToDrawLog += $"U:{updateRate.LastMilliseconds}ms ";
             musicClock.Snapshot(updateRate);
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
@@ -93,7 +93,6 @@ namespace Linesurf
 
                 }
             }
-            Console.Write(",");
 
             base.Update(gameTime);
         }
@@ -102,7 +101,8 @@ namespace Linesurf
         protected override void Draw(GameTime gameTime)
         {
             drawRate.Update();
-
+            Console.WriteLine(UpdateToDrawLog + "D:{0}ms ",drawRate.LastMilliseconds);
+            UpdateToDrawLog = "";
             graphics.GraphicsDevice.Clear(Color.CornflowerBlue.Darken(70));
             spriteBatch.Begin();
 
