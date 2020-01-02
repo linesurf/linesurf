@@ -48,11 +48,10 @@ namespace Linesurf.Framework
                 if (Debounce)
                     return false;
 
-                Console.Write("Enabling debounce ");
+                Console.Write(" T ({0}ms el - {1}ms so)[{4}] % {2}ms bpm[{5}] < {3}ms tolerance", snapshotElapsed, SongOffset, BpmOffset, updateRate.LastMilliseconds, (snapshotElapsed - SongOffset), (snapshotElapsed - SongOffset) % BpmOffset);
+
                 return Debounce = true;
             }
-
-            Console.Write(".");
             return Debounce = false;
         }
 
@@ -74,7 +73,7 @@ namespace Linesurf.Framework
                 SongOffset = nextTp.Offset;
                 Bpm = nextTp.Bpm;
                 Debounce = false;
-                Console.Write("Disabled debounce after timing point change ");
+                Console.Write(" TC");
             }
         }
     }
