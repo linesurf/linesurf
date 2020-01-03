@@ -74,6 +74,7 @@ namespace Linesurf
             MediaPlayer.Play(song);
             musicClock.AudioTime.Restart();
             MediaPlayer.Volume = 0.175f;
+            
         }
 
 
@@ -125,7 +126,7 @@ namespace Linesurf
                 new Vector2(0, 160), Color.White);
 
             spriteBatch.DrawString(fontNormal,
-                String.Format("{0} bpm ({1} ms)", musicClock.Bpm, musicClock.BpmOffset),
+                $"{musicClock.Bpm} bpm ({musicClock.BpmOffset} ms)",
                 new Vector2(0, 180), Color.White);
 
             spriteBatch.DrawString(fontNormal,
@@ -137,7 +138,7 @@ namespace Linesurf
                     new Vector2(GraphicsDevice.Viewport.Width - fontNormal.MeasureString("debug build").X, 0),
                     Color.IndianRed);
             }
-
+            
             spriteBatch.End();
             base.Draw(gameTime);
         }
