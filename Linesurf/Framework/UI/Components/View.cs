@@ -19,15 +19,8 @@ namespace Linesurf.Framework.UI.Components
         {
             spriteBatch = sb;
             graphicsDevice = gd;
-            
-            //register elements automagically..somehow
 
-            var me = this;
-            
-}    
-            }
-            
+            //register elements automagically..somehow
         }
-        
     }
 }
