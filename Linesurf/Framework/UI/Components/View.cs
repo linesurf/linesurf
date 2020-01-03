@@ -20,17 +20,11 @@ namespace Linesurf.Framework.UI.Components
             spriteBatch = sb;
             graphicsDevice = gd;
             
-            //register elements automagically
+            //register elements automagically..somehow
 
-            var me = typeof(Program).Assembly.DefinedTypes
-                .First(info => info.AssemblyQualifiedName == this.GetType().AssemblyQualifiedName);
-
-            foreach (var field in me.DeclaredFields)
-            {
-                if (field.GetValue(null) is UIElement e)
-                {
-                    elements.Add(e);
-                }    
+            var me = this;
+            
+}    
             }
             
         }
