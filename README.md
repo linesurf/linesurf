@@ -1,6 +1,6 @@
 # Linesurf
-A rhythm game based on Project Mirai with some extra features to hopefully make things more unique and interesting :)
-Currently in heavy development n'stuff
+A rhythm game based on lines with some interesting and unique features. :)
+Currently going development
 
 ## Links
 [Discord](https://discord.gg/9GmMVuD) (This has all of the information you need about code standard guidelines, plans, development, feedback, etc.)
