@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using Linesurf.Framework;
 using Linesurf.Framework.Utils;
@@ -28,6 +29,8 @@ namespace Linesurf
 
         public static Texture2D Pixel = default!;
 
+        List<Vector2> curvePoints =
+            ComputeCurvePoints(10, new[] {new Point(10, 20), new Point(300, 300), new Point(0, 330),});
 
         MusicClock musicClock = new MusicClock(
             new TimingPoint(54, 120),
@@ -139,9 +142,60 @@ namespace Linesurf
                     Color.IndianRed);
             }
             
+            
+            
+            //also part of the shit code
+            
+            for(var x = 0; x < curvePoints.Count-1; x++)
+            {
+                spriteBatch.DrawLine( curvePoints[x], curvePoints[x + 1], Color.Black, 2);
+            }
+            
             spriteBatch.End();
             base.Draw(gameTime);
         }
+        
+        //shit code area copied over
+        //please dont mind the shit
+        
+        
+        
+        public static List<Vector2> ComputeCurvePoints(int steps, Point[] pointsQ)
+        {   
+            var curvePoints = new List<Vector2>();
+            for (float x = 0; x < 1; x += 1 / (float)steps)
+            {
+                curvePoints.Add(GetBezierPointRecursive(x, pointsQ).ToVector2());
+            }   
+            return curvePoints; 
+        }
+
+//Calculates a point on the bezier curve based on the timeStep.
+        private static Point GetBezierPointRecursive(float timeStep, IReadOnlyList<Point> ps)
+        {   
+            if (ps.Count > 2)
+            {
+                var newPoints = new List<Point>();
+                for (var x = 0; x < ps.Count-1; x++)
+                {
+                    newPoints.Add(InterpolatedPoint(ps[x], ps[x + 1], timeStep));
+                }
+                return GetBezierPointRecursive(timeStep, newPoints.ToArray());
+            }
+            else
+            {
+                return InterpolatedPoint(ps[0], ps[1], timeStep);
+            }
+        }
+
+//Gets the linearly interpolated point at t between two given points (with manual rounding).
+        private static Point InterpolatedPoint(Point p1, Point p2, float t)
+        {
+            var (x, y) = (Vector2.Multiply(p2.ToVector2() - p1.ToVector2(), t) + p1.ToVector2());
+            return new Point((int)Math.Round(x), (int)Math.Round(y));
+        }
+
+        
 
         protected override void OnDeactivated(object sender, EventArgs args)
         {
