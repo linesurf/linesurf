@@ -61,6 +61,12 @@ namespace Linesurf
         {
             Pixel = new Texture2D(GraphicsDevice, 1, 1);
             Pixel.SetData(new[] { Color.White });
+
+            graphics.GraphicsProfile = GraphicsProfile.HiDef;
+            graphics.PreferMultiSampling = true;
+            GraphicsDevice.PresentationParameters.MultiSampleCount = 2;
+            graphics.ApplyChanges();
+
             base.Initialize();
         }
 
