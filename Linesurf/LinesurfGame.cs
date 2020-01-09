@@ -53,8 +53,12 @@ namespace Linesurf
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
             IsFixedTimeStep = true;
-
             TargetElapsedTime = TimeSpan.FromMilliseconds(1);
+            graphics.PreparingDeviceSettings += (sender, args) => 
+            { 
+                graphics.PreferMultiSampling = true;
+                args.GraphicsDeviceInformation.PresentationParameters.MultiSampleCount = 2;
+            };
         }
 
         protected override void Initialize()
@@ -62,9 +66,6 @@ namespace Linesurf
             Pixel = new Texture2D(GraphicsDevice, 1, 1);
             Pixel.SetData(new[] { Color.White });
 
-            graphics.GraphicsProfile = GraphicsProfile.HiDef;
-            graphics.PreferMultiSampling = true;
-            GraphicsDevice.PresentationParameters.MultiSampleCount = 2;
             graphics.ApplyChanges();
 
             base.Initialize();
