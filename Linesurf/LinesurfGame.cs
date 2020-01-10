@@ -8,7 +8,6 @@ using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
-using MonoGame.Extended;
 namespace Linesurf
 {
     public class LinesurfGame : Game
@@ -19,7 +18,7 @@ namespace Linesurf
         public static string UpdateToDrawLog = "";
         WeightedFramerate drawRate = new WeightedFramerate(6);
         WeightedFramerate updateRate = new WeightedFramerate(6);
-
+        Texture2D line;
         bool timerOn = false;
         SoundEffect effect = default!;
         Song song = default!;
@@ -30,7 +29,7 @@ namespace Linesurf
         public static Texture2D Pixel = default!;
 
         List<Vector2> curvePoints =
-            ComputeCurvePoints(10, new[] {new Point(10, 20), new Point(300, 300), new Point(0, 330),});
+            ComputeCurvePoints(10, new[] {new Point(10, 10), new Point(400, 10), new Point(400, 400),});
 
         MusicClock musicClock = new MusicClock(
             new TimingPoint(54, 120),
@@ -77,7 +76,7 @@ namespace Linesurf
             spriteBatch = new SpriteBatch(GraphicsDevice);
             fontNormal = Content.Load<SpriteFont>("fontnormal");
             effect = Content.Load<SoundEffect>("normal-hitnormal");
-
+            line = Content.Load<Texture2D>("line");
             song = Content.Load<Song>("music");
             MediaPlayer.MediaStateChanged += (sender, e) => { timerOn = true; };
 
@@ -115,6 +114,8 @@ namespace Linesurf
             Console.WriteLine(UpdateToDrawLog + "D:{0}ms ",drawRate.LastMilliseconds);
             UpdateToDrawLog = "";
             graphics.GraphicsDevice.Clear(Color.CornflowerBlue.Darken(70));
+            curvePoints =
+                ComputeCurvePoints(Math.Abs(Mouse.GetState().Y), new[] {new Point(10, 10), new Point(400, 10), new Point(400, 400),});
             spriteBatch.Begin();
 
             spriteBatch.DrawString(fontNormal, MathF.Round(updateRate.Framerate) + " updates per second",
@@ -155,7 +156,7 @@ namespace Linesurf
             
             for(var x = 0; x < curvePoints.Count-1; x++)
             {
-                spriteBatch.DrawLine( curvePoints[x], curvePoints[x + 1], Color.Black, 2);
+                spriteBatch.DrawLine(line, curvePoints[x], curvePoints[x + 1], Color.White, 5);
             }
             
             spriteBatch.End();
@@ -178,7 +179,7 @@ namespace Linesurf
         }
 
 //Calculates a point on the bezier curve based on the timeStep.
-        private static Point GetBezierPointRecursive(float timeStep, IReadOnlyList<Point> ps)
+        static Point GetBezierPointRecursive(float timeStep, IReadOnlyList<Point> ps)
         {   
             if (ps.Count > 2)
             {
@@ -196,7 +197,7 @@ namespace Linesurf
         }
 
 //Gets the linearly interpolated point at t between two given points (with manual rounding).
-        private static Point InterpolatedPoint(Point p1, Point p2, float t)
+        static Point InterpolatedPoint(Point p1, Point p2, float t)
         {
             var (x, y) = (Vector2.Multiply(p2.ToVector2() - p1.ToVector2(), t) + p1.ToVector2());
             return new Point((int)Math.Round(x), (int)Math.Round(y));

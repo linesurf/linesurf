@@ -1,4 +1,5 @@
 ﻿using System;
+using Linesurf.Framework;
 
 namespace Linesurf
 {
