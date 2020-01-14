@@ -28,8 +28,8 @@ namespace Linesurf
 
         public static Texture2D Pixel = default!;
 
-        Vector2[] curvePoints =
-            QuadraticBezierPoints(10, new Point(10, 10), new Point(400, 10), new Point(400, 400));
+        Vector2[] curvePoints;
+         
 
         MusicClock musicClock = new MusicClock(
             new TimingPoint(54, 120),
@@ -111,16 +111,15 @@ namespace Linesurf
             drawRate.Update();
             graphics.GraphicsDevice.Clear(Color.Black);
             curvePoints =
-                QuadraticBezierPoints((int)MathUtils.Map(Math.Abs(Mouse.GetState().Y), 0, GraphicsDevice.Viewport.Height, 2, 20), new Point(10, 10), new Point(400, 10), new Point(400, 400));
+                QuadraticBezierPoints((int)MathUtils.Map(Math.Abs(Mouse.GetState().Y), 0, GraphicsDevice.Viewport.Height, 2, 20), 
+                    new Point(100, 100), new Point(600, 100), new Point(500, 300));
             spriteBatch.Begin();
 
             spriteBatch.DrawString(fontNormal, MathF.Round(updateRate.Framerate) + " updates per second",
                 new Vector2(0, 0), Color.White);
             spriteBatch.DrawString(fontNormal, MathF.Round(drawRate.Framerate) + " draws per second",
                 new Vector2(0, 20), Color.White);
-
-            spriteBatch.DrawString(fontNormal,
-                musicClock.SongOffset + "ms offset", new Vector2(0, 200), Color.White);
+                
 
             if (isDebug)
             {
