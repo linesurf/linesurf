@@ -48,7 +48,6 @@ namespace Linesurf.Framework
                 if (Debounce)
                     return false;
 
-                LinesurfGame.UpdateToDrawLog += $"T ({snapshotElapsed}ms el - {SongOffset}ms so)[{(snapshotElapsed - SongOffset)}] % {BpmOffset}ms bpm[{(snapshotElapsed - SongOffset) % BpmOffset}] < {updateRate.LastMilliseconds}ms tolerance ";
 
                 return Debounce = true;
             }
@@ -73,7 +72,6 @@ namespace Linesurf.Framework
                 SongOffset = nextTp.Offset;
                 Bpm = nextTp.Bpm;
                 Debounce = false;
-                LinesurfGame.UpdateToDrawLog += "TC ";
             }
         }
     }

@@ -15,7 +15,6 @@ namespace Linesurf
         readonly GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch = default!;
         SpriteFont fontNormal = default!;
-        public static string UpdateToDrawLog = "";
         WeightedFramerate drawRate = new WeightedFramerate(6);
         WeightedFramerate updateRate = new WeightedFramerate(6);
         Texture2D line;
@@ -28,8 +27,8 @@ namespace Linesurf
 
         public static Texture2D Pixel = default!;
 
-        List<Vector2> curvePoints =
-            ComputeCurvePoints(10, new[] {new Point(10, 10), new Point(400, 10), new Point(400, 400),});
+        Vector2[] curvePoints =
+            QuadraticBezierPoints(10, new Point(10, 10), new Point(400, 10), new Point(400, 400));
 
         MusicClock musicClock = new MusicClock(
             new TimingPoint(54, 120),
@@ -90,7 +89,6 @@ namespace Linesurf
         protected override void Update(GameTime gameTime)
         {
             updateRate.Update();
-            UpdateToDrawLog += $"U:{updateRate.LastMilliseconds}ms ";
             musicClock.Snapshot(updateRate);
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
@@ -111,11 +109,9 @@ namespace Linesurf
         protected override void Draw(GameTime gameTime)
         {
             drawRate.Update();
-            Console.WriteLine(UpdateToDrawLog + "D:{0}ms ",drawRate.LastMilliseconds);
-            UpdateToDrawLog = "";
-            graphics.GraphicsDevice.Clear(Color.CornflowerBlue.Darken(70));
+            graphics.GraphicsDevice.Clear(Color.Black);
             curvePoints =
-                ComputeCurvePoints(Math.Abs(Mouse.GetState().Y), new[] {new Point(10, 10), new Point(400, 10), new Point(400, 400),});
+                QuadraticBezierPoints((int)MathUtils.Map(Math.Abs(Mouse.GetState().Y), 0, GraphicsDevice.Viewport.Height, 2, 20), new Point(10, 10), new Point(400, 10), new Point(400, 400));
             spriteBatch.Begin();
 
             spriteBatch.DrawString(fontNormal, MathF.Round(updateRate.Framerate) + " updates per second",
@@ -154,7 +150,7 @@ namespace Linesurf
             
             //also part of the shit code
             
-            for(var x = 0; x < curvePoints.Count-1; x++)
+            for(var x = 0; x < curvePoints.Length-1; x++)
             {
                 spriteBatch.DrawLine(line, curvePoints[x], curvePoints[x + 1], Color.White, 5);
             }
@@ -163,47 +159,36 @@ namespace Linesurf
             base.Draw(gameTime);
         }
         
-        //shit code area copied over
-        //please dont mind the shit
         
-        
-        
-        public static List<Vector2> ComputeCurvePoints(int steps, Point[] pointsQ)
-        {   
-            var curvePoints = new List<Vector2>();
-            for (float x = 0; x < 1; x += 1 / (float)steps)
-            {
-                curvePoints.Add(GetBezierPointRecursive(x, pointsQ).ToVector2());
-            }   
-            return curvePoints; 
-        }
+        //bezier code i wrote.
+        //bezier curve is
+        //x = (1 - t) * (1 - t) * p[0].x + 2 * (1 - t) * t * p[1].x + t * t * p[2].x;
+        //y = (1 - t) * (1 - t) * p[0].y + 2 * (1 - t) * t * p[1].y + t * t * p[2].y;
+        //where p[0] and p[2] are the end points and p[1] is the control point
+        //t is how far along we are the curve    
 
-//Calculates a point on the bezier curve based on the timeStep.
-        static Point GetBezierPointRecursive(float timeStep, IReadOnlyList<Point> ps)
-        {   
-            if (ps.Count > 2)
-            {
-                var newPoints = new List<Point>();
-                for (var x = 0; x < ps.Count-1; x++)
-                {
-                    newPoints.Add(InterpolatedPoint(ps[x], ps[x + 1], timeStep));
-                }
-                return GetBezierPointRecursive(timeStep, newPoints.ToArray());
-            }
-            else
-            {
-                return InterpolatedPoint(ps[0], ps[1], timeStep);
-            }
-        }
-
-//Gets the linearly interpolated point at t between two given points (with manual rounding).
-        static Point InterpolatedPoint(Point p1, Point p2, float t)
+//we really didnt need 10 methods for that did we
+        public static Vector2[] QuadraticBezierPoints(int steps, params Point[] p)
         {
-            var (x, y) = (Vector2.Multiply(p2.ToVector2() - p1.ToVector2(), t) + p1.ToVector2());
-            return new Point((int)Math.Round(x), (int)Math.Round(y));
-        }
+            if (p.Length != 3) throw new ArgumentException("For quadratic Bézier curve calculation number of points given must be 3.");
+            if(steps < 2) throw new ArgumentException("There must be at least two steps for Bézier calculation.");
+            float t;
+            float x;
+            float y;
+            var vector2s = new Vector2[steps];
+            for (var i = 0; i < steps; i++)
+            {
+                t = MathUtils.Map(i, 0, steps - 1, 0, 1);
+                
+                x = (1 - t) * (1 - t) * p[0].X + 2 * (1 - t) * t * p[1].X + t * t * p[2].X;
+                y = (1 - t) * (1 - t) * p[0].Y + 2 * (1 - t) * t * p[1].Y + t * t * p[2].Y;
+                vector2s[i] = new Vector2(x,y);
+            }
 
+            return vector2s;
+        }
         
+        //the shit has been greatily reduced
 
         protected override void OnDeactivated(object sender, EventArgs args)
         {
