@@ -1,4 +1,6 @@
-﻿namespace Linesurf.Framework.Utils
+﻿using System;
+
+namespace Linesurf.Framework.Utils
 {
     public static class MathUtils
     {
@@ -9,5 +11,8 @@
 
         public static byte MinusPercent(this byte value, float percentage) =>
             (byte) (value - value * (percentage / 100));
+
+        public static byte PlusPercent(this byte value, float percentage) =>
+            (byte) MathF.Max(value + value * percentage / 100, 255);
     }
 }

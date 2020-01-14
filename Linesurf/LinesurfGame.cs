@@ -92,8 +92,7 @@ namespace Linesurf
             updateRate.Update();
             musicClock.Snapshot(updateRate);
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
-
+                Exit();    
             if (timerOn)
             {
                 if (musicClock.CheckBeat(updateRate))
@@ -116,26 +115,9 @@ namespace Linesurf
             spriteBatch.Begin();
 
             spriteBatch.DrawString(fontNormal, MathF.Round(updateRate.Framerate) + " updates per second",
-                new Vector2(0, 0), Color.CornflowerBlue);
+                new Vector2(0, 0), Color.White);
             spriteBatch.DrawString(fontNormal, MathF.Round(drawRate.Framerate) + " draws per second",
-                new Vector2(0, 20), Color.CornflowerBlue);
-
-            spriteBatch.DrawString(fontNormal, updateRate.LastMilliseconds + "ms update latency",
-                new Vector2(0, 40), Color.CornflowerBlue);
-            spriteBatch.DrawString(fontNormal, drawRate.LastLatency.TotalMilliseconds + " ms draw latency",
-                new Vector2(0, 60), Color.CornflowerBlue);
-
-            spriteBatch.DrawString(fontNormal, MediaPlayer.PlayPosition.TotalMilliseconds + "ms player",
-                new Vector2(0, 120), Color.Wheat);
-            spriteBatch.DrawString(fontNormal, (int) musicClock.AudioTime.Elapsed.TotalMilliseconds + "ms timer",
-                new Vector2(0, 140), Color.Wheat);
-            spriteBatch.DrawString(fontNormal,
-                (int) (musicClock.AudioTime.Elapsed.TotalMilliseconds % musicClock.BpmOffset) + "ms to beat",
-                new Vector2(0, 160), Color.White);
-
-            spriteBatch.DrawString(fontNormal,
-                $"{musicClock.Bpm} bpm ({musicClock.BpmOffset} ms)",
-                new Vector2(0, 180), Color.White);
+                new Vector2(0, 20), Color.White);
 
             spriteBatch.DrawString(fontNormal,
                 musicClock.SongOffset + "ms offset", new Vector2(0, 200), Color.White);
@@ -167,8 +149,8 @@ namespace Linesurf
         //y = (1 - t) * (1 - t) * p[0].y + 2 * (1 - t) * t * p[1].y + t * t * p[2].y;
         //where p[0] and p[2] are the end points and p[1] is the control point
         //t is how far along we are the curve    
-
-//we really didnt need 10 methods for that did we
+        //we really didnt need 10 methods for that did we
+        
         public static Vector2[] QuadraticBezierPoints(int steps, params Point[] p)
         {
             if (p.Length != 3) throw new ArgumentException("For quadratic Bézier curve calculation number of points given must be 3.");
@@ -189,7 +171,6 @@ namespace Linesurf
             return vector2s;
         }
         
-        //the shit has been greatily reduced
 
         protected override void OnDeactivated(object sender, EventArgs args)
         {

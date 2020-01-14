@@ -12,5 +12,11 @@ namespace Linesurf.Framework.Utils
                 color.G.MinusPercent(percent),
                 color.B.MinusPercent(percent),
                 reduceAlpha ? color.A.MinusPercent(percent) : color.A);
+        
+        public static Color Brighten(this Color color, float percent, bool augmentAlpha = false)
+            => new Color(color.R.PlusPercent(percent),
+                color.G.PlusPercent(percent),
+                color.B.PlusPercent(percent),
+                augmentAlpha ? color.A.PlusPercent(percent) : color.A);
     }
 }
