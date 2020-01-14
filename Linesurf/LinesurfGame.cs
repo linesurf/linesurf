@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Reflection;
 using Linesurf.Framework;
 using Linesurf.Framework.Utils;
@@ -29,8 +28,12 @@ namespace Linesurf
         public static Texture2D Pixel = default!;
 
         Vector2[] curvePoints;
-         
 
+        readonly Point[] curveControl =  {new Point(200, 200), new Point(400, 200), new Point(400, 400)};
+        float lengthFromPoints;
+        float lengthExact;
+        
+        
         MusicClock musicClock = new MusicClock(
             new TimingPoint(54, 120),
             new TimingPoint(44554, 115),
@@ -58,6 +61,8 @@ namespace Linesurf
                 graphics.PreferMultiSampling = true;
                 args.GraphicsDeviceInformation.PresentationParameters.MultiSampleCount = 2;
             };
+            
+
         }
 
         protected override void Initialize()
@@ -101,7 +106,9 @@ namespace Linesurf
 
                 }
             }
-
+            curveControl[1] = Mouse.GetState().Position;
+            lengthFromPoints = MathUtils.LinearDistance(curveControl[0], curveControl[1]) + MathUtils.LinearDistance(curveControl[1], curveControl[2]);
+            lengthExact = MathUtils.BezierLength(curveControl);
             base.Update(gameTime);
         }
 
@@ -109,10 +116,11 @@ namespace Linesurf
         protected override void Draw(GameTime gameTime)
         {
             drawRate.Update();
+
+            var lengthFromSections = 0f;
             graphics.GraphicsDevice.Clear(Color.Black);
             curvePoints =
-                QuadraticBezierPoints((int)MathUtils.Map(Math.Abs(Mouse.GetState().Y), 0, GraphicsDevice.Viewport.Height, 2, 20), 
-                    new Point(100, 100), new Point(600, 100), new Point(500, 300));
+                MathUtils.QuadraticBezierPoints(20,curveControl);
             spriteBatch.Begin();
 
             spriteBatch.DrawString(fontNormal, MathF.Round(updateRate.Framerate) + " updates per second",
@@ -134,43 +142,18 @@ namespace Linesurf
             
             for(var x = 0; x < curvePoints.Length-1; x++)
             {
-                spriteBatch.DrawLine(curvePoints[x], curvePoints[x + 1], Color.White, 5);
+                spriteBatch.DrawLine(line, curvePoints[x], curvePoints[x + 1], Color.White, 5);
+                lengthFromSections += MathUtils.LinearDistance(curvePoints[x], curvePoints[x + 1]);
             }
             
+            
+            spriteBatch.DrawString(fontNormal, $"length from each curve point: {lengthFromPoints}\nlength from each section:{lengthFromSections}\nexact(er):{lengthExact}",
+                new Vector2(0,60), Color.White);
             spriteBatch.End();
             base.Draw(gameTime);
         }
-        
-        
-        //bezier code i wrote.
-        //bezier curve is
-        //x = (1 - t) * (1 - t) * p[0].x + 2 * (1 - t) * t * p[1].x + t * t * p[2].x;
-        //y = (1 - t) * (1 - t) * p[0].y + 2 * (1 - t) * t * p[1].y + t * t * p[2].y;
-        //where p[0] and p[2] are the end points and p[1] is the control point
-        //t is how far along we are the curve    
-        //we really didnt need 10 methods for that did we
-        
-        public static Vector2[] QuadraticBezierPoints(int steps, params Point[] p)
-        {
-            if (p.Length != 3) throw new ArgumentException("For quadratic Bézier curve calculation number of points given must be 3.");
-            if(steps < 2) throw new ArgumentException("There must be at least two steps for Bézier calculation.");
-            float t;
-            float x;
-            float y;
-            var vector2s = new Vector2[steps];
-            for (var i = 0; i < steps; i++)
-            {
-                t = MathUtils.Map(i, 0, steps - 1, 0, 1);
-                
-                x = (1 - t) * (1 - t) * p[0].X + 2 * (1 - t) * t * p[1].X + t * t * p[2].X;
-                y = (1 - t) * (1 - t) * p[0].Y + 2 * (1 - t) * t * p[1].Y + t * t * p[2].Y;
-                vector2s[i] = new Vector2(x,y);
-            }
 
-            return vector2s;
-        }
         
-
         protected override void OnDeactivated(object sender, EventArgs args)
         {
             MediaPlayer.Pause();
