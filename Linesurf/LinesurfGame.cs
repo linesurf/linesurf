@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using MonoGame.Extended;
 namespace Linesurf
 {
     public class LinesurfGame : Game
@@ -152,7 +153,7 @@ namespace Linesurf
             
             for(var x = 0; x < curvePoints.Length-1; x++)
             {
-                spriteBatch.DrawLine(line, curvePoints[x], curvePoints[x + 1], Color.White, 5);
+                spriteBatch.DrawLine(curvePoints[x], curvePoints[x + 1], Color.White, 5);
             }
             
             spriteBatch.End();
