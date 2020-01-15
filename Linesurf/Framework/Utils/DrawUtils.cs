@@ -1,22 +1,16 @@
-﻿using System;
+﻿using Linesurf.Framework.Map.Objects;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended;
 
 namespace Linesurf.Framework.Utils
 {
     public static class DrawUtils
     {
-        
-//Method used to draw a line between two points.
-//also part of the shit code
-        public static void DrawLine(this SpriteBatch spriteBatch, Texture2D lineTexture2D, Vector2 begin, Vector2 end, Color color, int width = 1)
+        public static void DrawSegment(this SpriteBatch spriteBatch, LineSegment bc, int steps, Color color, float thickness = 1f, int layerDepth = 0)
         {
-            Rectangle r = new Rectangle((int)begin.X, (int)begin.Y, (int)(end - begin).Length() + width, width);
-            Vector2 v = Vector2.Normalize(begin - end);
-            float angle = (float)Math.Acos(Vector2.Dot(v, -Vector2.UnitX));
-            if (begin.Y > end.Y) angle = MathHelper.TwoPi - angle;
-            spriteBatch.Draw(lineTexture2D, r, null, color, angle, Vector2.Zero, SpriteEffects.None, 0);
+            var v2s = bc.GetTruncated(steps);
+            for (var i = 0; i < steps - 1; i++) spriteBatch.DrawLine(v2s[i], v2s[i + 1], color, thickness, layerDepth);
         }
-
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using Linesurf.Framework;
+using Linesurf.Framework.Map.Objects;
 using Linesurf.Framework.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
@@ -27,12 +28,12 @@ namespace Linesurf
 
         public static Texture2D Pixel = default!;
 
-        Vector2[] curvePoints;
 
-        readonly Point[] curveControl =  {new Point(200, 200), new Point(400, 200), new Point(400, 400)};
-        float lengthFromPoints;
-        float lengthExact;
+        readonly Point[] curveControl = {new Point(200, 200), new Point(400, 200), new Point(400, 400)};
+        readonly Point[] lineaControl = {new Point(400, 400), new Point(800, 400)};
         
+        BezierSegment bezierSegment;
+        LinearSegment linearSegment;
         
         MusicClock musicClock = new MusicClock(
             new TimingPoint(54, 120),
@@ -62,6 +63,7 @@ namespace Linesurf
                 args.GraphicsDeviceInformation.PresentationParameters.MultiSampleCount = 2;
             };
             
+            linearSegment = new LinearSegment(lineaControl);
 
         }
 
@@ -107,8 +109,7 @@ namespace Linesurf
                 }
             }
             curveControl[1] = Mouse.GetState().Position;
-            lengthFromPoints = MathUtils.LinearDistance(curveControl[0], curveControl[1]) + MathUtils.LinearDistance(curveControl[1], curveControl[2]);
-            lengthExact = MathUtils.BezierLength(curveControl);
+            bezierSegment = new BezierSegment(curveControl);
             base.Update(gameTime);
         }
 
@@ -116,39 +117,25 @@ namespace Linesurf
         protected override void Draw(GameTime gameTime)
         {
             drawRate.Update();
-
-            var lengthFromSections = 0f;
-            graphics.GraphicsDevice.Clear(Color.Black);
-            curvePoints =
-                MathUtils.QuadraticBezierPoints(20,curveControl);
-            spriteBatch.Begin();
-
-            spriteBatch.DrawString(fontNormal, MathF.Round(updateRate.Framerate) + " updates per second",
-                new Vector2(0, 0), Color.White);
-            spriteBatch.DrawString(fontNormal, MathF.Round(drawRate.Framerate) + " draws per second",
-                new Vector2(0, 20), Color.White);
                 
+            graphics.GraphicsDevice.Clear(Color.Black);
+            spriteBatch.Begin();
+            spriteBatch.DrawString(fontNormal,
+                $"{(int)drawRate.Framerate}FPS\n{(int)updateRate.Framerate}UPS\n{bezierSegment.Length} bezier length",
+                Vector2.Zero, Color.White);
+
+                
+            spriteBatch.DrawSegment(bezierSegment, 20, Color.White);
+            spriteBatch.DrawSegment(linearSegment, 20, Color.White);
 
             if (isDebug)
             {
                 spriteBatch.DrawString(fontNormal, "debug build",
                     new Vector2(GraphicsDevice.Viewport.Width - fontNormal.MeasureString("debug build").X, 0),
-                    Color.IndianRed);
+                    Color.Red);
             }
             
             
-            
-            //also part of the shit code
-            
-            for(var x = 0; x < curvePoints.Length-1; x++)
-            {
-                spriteBatch.DrawLine(line, curvePoints[x], curvePoints[x + 1], Color.White, 5);
-                lengthFromSections += MathUtils.LinearDistance(curvePoints[x], curvePoints[x + 1]);
-            }
-            
-            
-            spriteBatch.DrawString(fontNormal, $"length from each curve point: {lengthFromPoints}\nlength from each section:{lengthFromSections}\nexact(er):{lengthExact}",
-                new Vector2(0,60), Color.White);
             spriteBatch.End();
             base.Draw(gameTime);
         }

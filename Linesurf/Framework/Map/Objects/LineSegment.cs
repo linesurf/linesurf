@@ -1,17 +1,16 @@
-﻿using System.Collections.Immutable;
+﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using Microsoft.Xna.Framework;
 
-namespace Linesurf.Framework.Map
+namespace Linesurf.Framework.Map.Objects
 {
-    public class LineSegment
+    public abstract class LineSegment
     {
-        public ImmutableArray<Point> SegmentPoints { get; }
-        public CurveType CurveType { get; }
-    }
+        public readonly Point[] SegmentPoints;
+        public float Length;
+        protected LineSegment(Point[] points) => SegmentPoints = points;
 
-    public enum CurveType
-    {
-        Linear,
-        Bezier,
+        protected abstract float GetLength();
+        public abstract Vector2[] GetTruncated(int steps);
     }
 }
