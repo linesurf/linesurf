@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 using Linesurf.Framework;
 using Linesurf.Framework.Map.Objects;
 using Linesurf.Framework.Utils;
@@ -8,6 +12,9 @@ using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using Color = Microsoft.Xna.Framework.Color;
+using Point = Microsoft.Xna.Framework.Point;
+using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 
 namespace Linesurf
@@ -19,8 +26,8 @@ namespace Linesurf
         SpriteFont fontNormal = default!;
         WeightedFramerate drawRate = new WeightedFramerate(6);
         WeightedFramerate updateRate = new WeightedFramerate(6);
-
-
+        Bitmap bitmap = default!;
+        
         readonly bool isDebug = typeof(Program).Assembly.GetCustomAttribute<AssemblyConfigurationAttribute>()?.Configuration ==
                        "Debug";
 
@@ -86,17 +93,26 @@ namespace Linesurf
         protected override void Draw(GameTime gameTime)
         {
             drawRate.Update();
+
+            bitmap = new Bitmap(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
+            using (var graphics = Graphics.FromImage(bitmap))
+            {
+                graphics.DrawString("Hello from GDI. ジャッズ　ピアノ.  다만, 누구든지 성별·\n露津男分学聞場氏職人説選権家広演。\nतकनीकी सिद्धांत परिभाषित जिवन", new Font(FontFamily.GenericSansSerif, 20f), new SolidBrush(System.Drawing.Color.AntiqueWhite), 0,100);
+            }
             
-            graphics.GraphicsDevice.Clear(Color.Black);
+            var stream = new MemoryStream();
+            bitmap.Save(stream, ImageFormat.Bmp);
+            var gdiOut = Texture2D.FromStream(GraphicsDevice, stream);
+            
+            graphics.GraphicsDevice.Clear(Color.Black);        
             spriteBatch.Begin();
             spriteBatch.DrawString(fontNormal,
                 $"{(int)drawRate.Framerate}FPS\n{(int)updateRate.Framerate}UPS\n{bezierSegment.Length} bezier length",
                 Vector2.Zero, Color.White);
 
-                
             spriteBatch.DrawSegment(bezierSegment, 20, Color.White);
             spriteBatch.DrawSegment(linearSegment, 20, Color.White);
-
+            spriteBatch.Draw(gdiOut, new Rectangle(0,0,bitmap.Width, bitmap.Height), Color.White);
             if (isDebug)
             {
                 spriteBatch.DrawString(fontNormal, "debug build",
