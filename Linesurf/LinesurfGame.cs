@@ -3,15 +3,12 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Reflection;
-using System.Threading.Tasks;
 using Linesurf.Framework;
 using Linesurf.Framework.Map.Objects;
 using Linesurf.Framework.Utils;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Media;
 using Color = Microsoft.Xna.Framework.Color;
 using Point = Microsoft.Xna.Framework.Point;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
@@ -27,7 +24,6 @@ namespace Linesurf
         WeightedFramerate drawRate = new WeightedFramerate(6);
         WeightedFramerate updateRate = new WeightedFramerate(6);
         Bitmap bitmap = default!;
-        
         readonly bool isDebug = typeof(Program).Assembly.GetCustomAttribute<AssemblyConfigurationAttribute>()?.Configuration ==
                        "Debug";
 
@@ -55,7 +51,6 @@ namespace Linesurf
             };
             
             linearSegment = new LinearSegment(lineaControl);
-
         }
 
         protected override void Initialize()
@@ -70,11 +65,8 @@ namespace Linesurf
 
         protected override void LoadContent()
         {
-
             spriteBatch = new SpriteBatch(GraphicsDevice);
             fontNormal = Content.Load<SpriteFont>("fontnormal");
-    
-            
         }
 
 
@@ -99,11 +91,17 @@ namespace Linesurf
             {
                 graphics.DrawString("Hello from GDI. ジャッズ　ピアノ.  다만, 누구든지 성별·\n露津男分学聞場氏職人説選権家広演。\nतकनीकी सिद्धांत परिभाषित जिवन", new Font(FontFamily.GenericSansSerif, 20f), new SolidBrush(System.Drawing.Color.AntiqueWhite), 0,100);
             }
-            
             var stream = new MemoryStream();
             bitmap.Save(stream, ImageFormat.Bmp);
             var gdiOut = Texture2D.FromStream(GraphicsDevice, stream);
+            //good things about this:
+            //it works with Internationale Text
+            //it looks nicer than SpriteBatch.DrawString() with spritefonts.
+            //bad things:
+            //it still looks bad
+            //CPU rendered. too much text and we might DIE! of low FPS.
             
+
             graphics.GraphicsDevice.Clear(Color.Black);        
             spriteBatch.Begin();
             spriteBatch.DrawString(fontNormal,
@@ -113,6 +111,7 @@ namespace Linesurf
             spriteBatch.DrawSegment(bezierSegment, 20, Color.White);
             spriteBatch.DrawSegment(linearSegment, 20, Color.White);
             spriteBatch.Draw(gdiOut, new Rectangle(0,0,bitmap.Width, bitmap.Height), Color.White);
+
             if (isDebug)
             {
                 spriteBatch.DrawString(fontNormal, "debug build",
