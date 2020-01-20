@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Drawing.Text;
 using System.IO;
 using System.Reflection;
 using Linesurf.Framework;
@@ -29,7 +30,8 @@ namespace Linesurf
 
         public static Texture2D Pixel = default!;
 
-
+        PrivateFontCollection privateFontCollection = new PrivateFontCollection();
+        Font fontNormalGDI;
         readonly Point[] curveControl = {new Point(200, 200), new Point(400, 200), new Point(400, 400)};
         readonly Point[] lineaControl = {new Point(400, 400), new Point(800, 400)};
         
@@ -67,6 +69,9 @@ namespace Linesurf
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
             fontNormal = Content.Load<SpriteFont>("fontnormal");
+            
+            privateFontCollection.AddFontFile(@".\Content\Raleway-Regular.ttf");
+            fontNormalGDI = new Font(privateFontCollection.Families[0], 14, FontStyle.Regular);
         }
 
 
@@ -85,11 +90,11 @@ namespace Linesurf
         protected override void Draw(GameTime gameTime)
         {
             drawRate.Update();
-
+            //GDI+ (System.Drawing.Common)
             bitmap = new Bitmap(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
             using (var graphics = Graphics.FromImage(bitmap))
             {
-                graphics.DrawString("Hello from GDI. ジャッズ　ピアノ.  다만, 누구든지 성별·\n露津男分学聞場氏職人説選権家広演。\nतकनीकी सिद्धांत परिभाषित जिवन", new Font(FontFamily.GenericSansSerif, 20f), new SolidBrush(System.Drawing.Color.AntiqueWhite), 0,100);
+                graphics.DrawString("Hello from GDI.", fontNormalGDI , Brushes.White, 0,100);
             }
             var stream = new MemoryStream();
             bitmap.Save(stream, ImageFormat.Bmp);
@@ -100,16 +105,16 @@ namespace Linesurf
             //bad things:
             //it still looks bad
             //CPU rendered. too much text and we might DIE! of low FPS.
+            //for reference. it seems like on my pc at least 300 is about the maximum without losing FPS.
+            //also, many of the type names conflict heavily with monogame making everything very confusing (Color, Rectangle, Point, etc.)
             
-
             graphics.GraphicsDevice.Clear(Color.Black);        
             spriteBatch.Begin();
             spriteBatch.DrawString(fontNormal,
                 $"{(int)drawRate.Framerate}FPS\n{(int)updateRate.Framerate}UPS\n{bezierSegment.Length} bezier length",
                 Vector2.Zero, Color.White);
-
-            spriteBatch.DrawSegment(bezierSegment, 20, Color.White);
-            spriteBatch.DrawSegment(linearSegment, 20, Color.White);
+            
+            
             spriteBatch.Draw(gdiOut, new Rectangle(0,0,bitmap.Width, bitmap.Height), Color.White);
 
             if (isDebug)

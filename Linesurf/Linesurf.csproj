@@ -26,6 +26,9 @@
   
   <ItemGroup>
     <None Remove="icon.bmp" />
+    <None Update="Content\Raleway-Regular.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
