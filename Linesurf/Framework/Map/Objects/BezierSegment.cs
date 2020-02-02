@@ -41,7 +41,7 @@ namespace Linesurf.Framework.Map.Objects
 
         public override Vector2[] GetTruncated(int steps)
         {           
-            if(steps < 2) throw new ArgumentException("Truncated Bézier calcualted with < 2 steps");
+            if(steps < 2) throw new ArgumentException("Truncated Bézier cannot be calcualted with < 2 steps");
             
             float t;
             float x;
