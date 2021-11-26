@@ -2,7 +2,10 @@
 using Linesurf.Framework;
 using Linesurf.Framework.UI;
 using Linesurf.Framework.UI.Elements;
+using Linesurf.Framework.Utils;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using SpriteFontPlus;
 
 namespace Linesurf;
@@ -12,14 +15,32 @@ public class LinesurfGame : Game
     readonly GraphicsDeviceManager graphics;
     SpriteBatch spriteBatch = default!;
     SpriteFont fontNormal = default!;
-    WeightedFramerate drawRate = new WeightedFramerate(6);
-    WeightedFramerate updateRate = new WeightedFramerate(6);
+    WeightedFramerate drawRate = new(6);
+    WeightedFramerate updateRate = new(6);
     readonly bool isDebug = typeof(Program).Assembly.GetCustomAttribute<AssemblyConfigurationAttribute>()?.Configuration ==
                    "Debug";
+
+    bool timerOn = false;
+    SoundEffect effect = default!;
+    Song song = default!;
 
     DynamicSpriteFont dynFontNormal = default!;
     UI test = default!;
     Label testFPS = default!;
+
+    MusicClock musicClock = new(
+     new TimingPoint(54, 120),
+     new TimingPoint(44554, 115),
+     new TimingPoint(44554 + MusicUtils.ToMsOffset(115), 110),
+     new TimingPoint(44554 + MusicUtils.ToMsOffset(115) + MusicUtils.ToMsOffset(110), 105),
+     new TimingPoint(44554 + MusicUtils.ToMsOffset(115) + MusicUtils.ToMsOffset(110) + MusicUtils.ToMsOffset(105), 100),
+     new TimingPoint(44554 + MusicUtils.ToMsOffset(115) + MusicUtils.ToMsOffset(110) + MusicUtils.ToMsOffset(105) + MusicUtils.ToMsOffset(110), 95f),
+     new TimingPoint(44554 + MusicUtils.ToMsOffset(115) + MusicUtils.ToMsOffset(110) + MusicUtils.ToMsOffset(105) + MusicUtils.ToMsOffset(110) + MusicUtils.ToMsOffset(95), 90),
+     new TimingPoint(58750, 96),
+     new TimingPoint(58750 + MusicUtils.ToMsOffset(96), 102),
+     new TimingPoint(58750 + MusicUtils.ToMsOffset(96) + MusicUtils.ToMsOffset(102), 108),
+     new TimingPoint(58750 + MusicUtils.ToMsOffset(96) + MusicUtils.ToMsOffset(102) + MusicUtils.ToMsOffset(108), 114),
+     new TimingPoint(58750 + MusicUtils.ToMsOffset(96) + MusicUtils.ToMsOffset(102) + MusicUtils.ToMsOffset(108) + MusicUtils.ToMsOffset(114), 120));
 
     public LinesurfGame()
     {
@@ -35,6 +56,14 @@ public class LinesurfGame : Game
             graphics.PreferMultiSampling = true;
             args.GraphicsDeviceInformation.PresentationParameters.MultiSampleCount = 2;
         };
+
+        effect = Content.Load<SoundEffect>("normal-hitnormal");
+        song = Content.Load<Song>("music");
+        MediaPlayer.MediaStateChanged += (sender, e) => { timerOn = true; };
+
+        MediaPlayer.Play(song);
+        musicClock.AudioTime.Restart();
+        MediaPlayer.Volume = 0.175f;
     }
 
     protected override void Initialize()
@@ -60,8 +89,20 @@ public class LinesurfGame : Game
     protected override void Update(GameTime gameTime)
     {
         updateRate.Update();
+        musicClock.Snapshot(updateRate);
+
         if (Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
+
+        if (timerOn)
+        {
+            if (musicClock.CheckBeat(updateRate))
+            {
+                effect.Play(0.20f, 0f, -1f);
+
+            }
+        }
+
         base.Update(gameTime);
         test.Update();
     }
@@ -83,5 +124,19 @@ public class LinesurfGame : Game
 
         spriteBatch.End();
         base.Draw(gameTime);
+    }
+
+    protected override void OnDeactivated(object sender, EventArgs args)
+    {
+        MediaPlayer.Pause();
+        musicClock.AudioTime.Stop();
+        base.OnDeactivated(sender, args);
+    }
+
+    protected override void OnActivated(object sender, EventArgs args)
+    {
+        MediaPlayer.Resume();
+        musicClock.AudioTime.Start();
+        base.OnActivated(sender, args);
     }
 }
