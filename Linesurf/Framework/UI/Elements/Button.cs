@@ -1,19 +1,22 @@
-﻿using MonoGame.Extended;
-using SpriteFontPlus;
+﻿using System.Diagnostics.CodeAnalysis;
+using FontStashSharp;
+using MonoGame.Extended;
 
 namespace Linesurf.Framework.UI.Elements;
 
 public class TextButton : UIElement
 {
-    DynamicSpriteFont font;
+    readonly DynamicSpriteFont font;
     string text;
     Color textColor;
     Color hoverColor;
     Color bgColor;
     Color drawColor;
+
     public string Text
     {
         get => text;
+        [MemberNotNull(nameof(text))]
         set
         {
             text = value;

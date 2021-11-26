@@ -1,10 +1,11 @@
-﻿using SpriteFontPlus;
+﻿using System.Diagnostics.CodeAnalysis;
+using FontStashSharp;
 
 namespace Linesurf.Framework.UI.Elements;
 
 public class Label : UIElement
 {
-    DynamicSpriteFont font;
+    readonly DynamicSpriteFont font;
     string text;
     Color textColor;
     Color hoverColor;
@@ -12,6 +13,7 @@ public class Label : UIElement
     public string Text
     {
         get => text;
+        [MemberNotNull(nameof(text))]
         set
         {
             text = value;

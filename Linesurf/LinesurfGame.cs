@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using FontStashSharp;
 using Linesurf.Framework;
 using Linesurf.Framework.UI;
 using Linesurf.Framework.UI.Elements;
@@ -6,7 +7,6 @@ using Linesurf.Framework.Utils;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
-using SpriteFontPlus;
 
 namespace Linesurf;
 
@@ -15,14 +15,15 @@ public class LinesurfGame : Game
     readonly GraphicsDeviceManager graphics;
     SpriteBatch spriteBatch = default!;
     SpriteFont fontNormal = default!;
+    FontSystem fontSystem = default!;
     WeightedFramerate drawRate = new(6);
     WeightedFramerate updateRate = new(6);
     readonly bool isDebug = typeof(Program).Assembly.GetCustomAttribute<AssemblyConfigurationAttribute>()?.Configuration ==
                    "Debug";
 
     bool timerOn = false;
-    SoundEffect effect = default!;
-    Song song = default!;
+    readonly SoundEffect effect = default!;
+    readonly Song song = default!;
 
     DynamicSpriteFont dynFontNormal = default!;
     UI test = default!;
@@ -78,7 +79,11 @@ public class LinesurfGame : Game
         spriteBatch = new SpriteBatch(GraphicsDevice);
         fontNormal = Content.Load<SpriteFont>("fontnormal");
 
-        dynFontNormal = DynamicSpriteFont.FromTtf(typeof(Program).Assembly.GetManifestResourceStream("Raleway-Regular.ttf"), 30);
+        fontSystem = new();
+        fontSystem.AddFont(typeof(Program).Assembly.GetManifestResourceStream("Raleway-Regular.ttf"));
+
+        dynFontNormal = fontSystem.GetFont(30);
+
         test = new UI(spriteBatch, graphics);
         test.AddElement(new Label(30, 30, dynFontNormal, "Laaaaaaa", Color.Red, Color.CornflowerBlue));
         testFPS = new Label(0, 0, dynFontNormal, "not calculated yet lol", Color.White);
