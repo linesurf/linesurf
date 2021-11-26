@@ -26,6 +26,7 @@ namespace Linesurf
         DynamicSpriteFont dynFontNormal = default!;
         UI test;
         Label testFPS;
+
         public LinesurfGame()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -54,8 +55,9 @@ namespace Linesurf
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
             fontNormal = Content.Load<SpriteFont>("fontnormal");
-            
-            dynFontNormal = DynamicSpriteFont.FromTtf(File.ReadAllBytes(@".\Content\Raleway-Regular.ttf"), 30);
+
+
+            dynFontNormal = DynamicSpriteFont.FromTtf(Assembly.GetEntryAssembly()!.GetManifestResourceStream("Raleway-Regular.ttf"), 30);
             test = new UI(spriteBatch, graphics);
             test.AddElement(new Label(30,30, dynFontNormal, "Laaaaaaa", Color.Red, Color.CornflowerBlue));
             testFPS = new Label(0,0,dynFontNormal,"not calculated yet lol", Color.White);
