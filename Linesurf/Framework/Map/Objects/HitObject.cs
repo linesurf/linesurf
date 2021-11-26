@@ -1,9 +1,8 @@
 ﻿using System;
 
-namespace Linesurf.Framework.Map.Objects
+namespace Linesurf.Framework.Map.Objects;
+
+public abstract class HitObject
 {
-    public abstract class HitObject
-    {
-        public TimeSpan Position { get; }
-    }
+    public TimeSpan Position { get; }
 }

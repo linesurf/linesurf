@@ -1,40 +1,39 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace Linesurf.Framework
+namespace Linesurf.Framework;
+
+public struct WeightedFramerate
 {
-    public struct WeightedFramerate
+    float currentFrametimes;
+    readonly float weight;
+    readonly int numerator;
+
+    public Stopwatch Stopwatch { get; }
+
+    public TimeSpan LastLatency { get; private set; }
+
+    public readonly double LastMilliseconds => LastLatency.TotalMilliseconds;
+
+    public readonly float Framerate => numerator / currentFrametimes is var framerate && float.IsInfinity(framerate)
+        ? 0
+        : framerate;
+
+    public WeightedFramerate(int oldFrameWeight)
     {
-        float currentFrametimes;
-        readonly float weight;
-        readonly int numerator;
+        LastLatency = default;
+        Stopwatch = new Stopwatch();
+        currentFrametimes = 0;
+        numerator = oldFrameWeight;
+        weight = oldFrameWeight / (oldFrameWeight - 1f);
+    }
 
-        public Stopwatch Stopwatch { get; }
-
-        public TimeSpan LastLatency { get; private set; }
-
-        public readonly double LastMilliseconds => LastLatency.TotalMilliseconds;
-        
-        public readonly float Framerate => numerator / currentFrametimes is var framerate && float.IsInfinity(framerate)
-            ? 0
-            : framerate;
-
-        public WeightedFramerate(int oldFrameWeight)
-        {
-            LastLatency = default;
-            Stopwatch = new Stopwatch();
-            currentFrametimes = 0;
-            numerator = oldFrameWeight;
-            weight = oldFrameWeight / (oldFrameWeight - 1f);
-        }
-
-        public void Update()
-        {
-            LastLatency = Stopwatch.Elapsed;
-            var timeSinceLastFrame = (float) Stopwatch.Elapsed.TotalSeconds;
-            currentFrametimes /= weight;
-            currentFrametimes += timeSinceLastFrame;
-            Stopwatch.Restart();
-        }
+    public void Update()
+    {
+        LastLatency = Stopwatch.Elapsed;
+        var timeSinceLastFrame = (float)Stopwatch.Elapsed.TotalSeconds;
+        currentFrametimes /= weight;
+        currentFrametimes += timeSinceLastFrame;
+        Stopwatch.Restart();
     }
 }
