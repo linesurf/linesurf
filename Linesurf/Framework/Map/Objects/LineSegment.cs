@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Collections.Immutable;
-using Microsoft.Xna.Framework;
-
-namespace Linesurf.Framework.Map.Objects;
+﻿namespace Linesurf.Framework.Map.Objects;
 
 public abstract class LineSegment
 {

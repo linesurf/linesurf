@@ -1,12 +1,7 @@
-﻿using System;
-using System.IO;
-using System.Reflection;
+﻿using System.Reflection;
 using Linesurf.Framework;
-using Linesurf.Framework.Map.Objects;
 using Linesurf.Framework.UI;
 using Linesurf.Framework.UI.Elements;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using SpriteFontPlus;
 
@@ -23,8 +18,8 @@ public class LinesurfGame : Game
                    "Debug";
 
     DynamicSpriteFont dynFontNormal = default!;
-    UI test;
-    Label testFPS;
+    UI test = default!;
+    Label testFPS = default!;
 
     public LinesurfGame()
     {
@@ -40,7 +35,6 @@ public class LinesurfGame : Game
             graphics.PreferMultiSampling = true;
             args.GraphicsDeviceInformation.PresentationParameters.MultiSampleCount = 2;
         };
-
     }
 
     protected override void Initialize()
@@ -55,15 +49,13 @@ public class LinesurfGame : Game
         spriteBatch = new SpriteBatch(GraphicsDevice);
         fontNormal = Content.Load<SpriteFont>("fontnormal");
 
-
-        dynFontNormal = DynamicSpriteFont.FromTtf(Assembly.GetEntryAssembly()!.GetManifestResourceStream("Raleway-Regular.ttf"), 30);
+        dynFontNormal = DynamicSpriteFont.FromTtf(typeof(Program).Assembly.GetManifestResourceStream("Raleway-Regular.ttf"), 30);
         test = new UI(spriteBatch, graphics);
         test.AddElement(new Label(30, 30, dynFontNormal, "Laaaaaaa", Color.Red, Color.CornflowerBlue));
         testFPS = new Label(0, 0, dynFontNormal, "not calculated yet lol", Color.White);
         test.AddElement(testFPS);
         test.Initialize();
     }
-
 
     protected override void Update(GameTime gameTime)
     {
@@ -73,7 +65,6 @@ public class LinesurfGame : Game
         base.Update(gameTime);
         test.Update();
     }
-
 
     protected override void Draw(GameTime gameTime)
     {
@@ -90,11 +81,7 @@ public class LinesurfGame : Game
                 Color.Red);
         }
 
-
         spriteBatch.End();
         base.Draw(gameTime);
     }
-
-
-
 }

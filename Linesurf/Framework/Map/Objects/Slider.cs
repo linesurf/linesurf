@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Linesurf.Framework.Map.Objects;
+﻿namespace Linesurf.Framework.Map.Objects;
 
 public class Slider : HitObject
 {

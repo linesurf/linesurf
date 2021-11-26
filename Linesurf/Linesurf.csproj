@@ -5,7 +5,13 @@
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <ImplicitUsings>true</ImplicitUsings>
   </PropertyGroup>
+
+  <ItemGroup>
+      <Using Include="Microsoft.Xna.Framework" />
+      <Using Include="Microsoft.Xna.Framework.Graphics" />
+  </ItemGroup>
     
     <PropertyGroup>
       <PublishReadyToRun>false</PublishReadyToRun>

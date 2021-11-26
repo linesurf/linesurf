@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using Linesurf.Framework.UI.Elements;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Linesurf.Framework.UI.Elements;
 
 namespace Linesurf.Framework.UI;
 

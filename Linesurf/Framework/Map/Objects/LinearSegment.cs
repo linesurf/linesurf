@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Linesurf.Framework.Utils;
-using Microsoft.Xna.Framework;
+﻿using Linesurf.Framework.Utils;
 
 namespace Linesurf.Framework.Map.Objects;
 
